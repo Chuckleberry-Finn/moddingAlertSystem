@@ -32,7 +32,7 @@ function modCountSystem.pullCurrentFileModInfo()
         local luaCallFrame = getCoroutineCallframeStack(coroutine,i)
         if luaCallFrame ~= nil and luaCallFrame then
             local fileDir = getFilenameOfCallframe(luaCallFrame)
-            local modInfoDir = fileDir:match("(.-)media/")
+            local modInfoDir = fileDir and fileDir:match("(.-)media/")
             modInfo = modInfoDir and getModInfo(modInfoDir)
         end
     end
@@ -45,6 +45,7 @@ function modCountSystem.addModID(modID) modCountSystem.workshopIDs[modID] = true
 
 
 function modCountSystem.pullAndAddModID()
+    modCountSystem.assembleModIDs()
     ---@type ChooseGameInfo.Mod
     local modInfo = modCountSystem.pullCurrentFileModInfo()
     if not modInfo then return end
