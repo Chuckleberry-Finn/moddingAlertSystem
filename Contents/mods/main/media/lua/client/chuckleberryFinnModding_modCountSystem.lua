@@ -32,8 +32,10 @@ function modCountSystem.pullCurrentFileModInfo()
         local luaCallFrame = getCoroutineCallframeStack(coroutine,i)
         if luaCallFrame ~= nil and luaCallFrame then
             local fileDir = getFilenameOfCallframe(luaCallFrame)
-            local modInfoDir = fileDir and fileDir:match("(.-)media/")
-            modInfo = modInfoDir and getModInfo(modInfoDir)
+            if fileDir then
+                local modInfoDir = string.match(fileDir,"(.-)media/")
+                if modInfoDir then modInfo = getModInfo(modInfoDir) end
+            end
         end
     end
 
