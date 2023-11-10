@@ -48,6 +48,8 @@ function modCountSystem.addModID(modID) modCountSystem.workshopIDs[modID] = true
 
 function modCountSystem.pullAndAddModID()
     modCountSystem.assembleModIDs()
+    return
+    --[[
     ---@type ChooseGameInfo.Mod
     local modInfo = modCountSystem.pullCurrentFileModInfo()
     if not modInfo then return end
@@ -61,6 +63,7 @@ function modCountSystem.pullAndAddModID()
     modCountSystem.workshopIDs[workshopID] = modInfo
 
     modCountSystem.count = modCountSystem.count+1
+    --]]
 end
 
 
