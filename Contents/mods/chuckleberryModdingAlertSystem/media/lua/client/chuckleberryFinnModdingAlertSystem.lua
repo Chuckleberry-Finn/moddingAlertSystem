@@ -7,6 +7,13 @@ local modCountSystem = require "chuckleberryFinnModding_modCountSystem"
 alertSystem.spiffoTextures = {"media/textures/spiffos/spiffoWatermelon.png"}
 function alertSystem.addTexture(path) table.insert(alertSystem.spiffoTextures, path) end
 
+alertSystem.alertSelected = 1
+alertSystem.alertsLoaded = {false}
+alertSystem.rateTexture = getTexture("media/textures/alert/rate.png")
+alertSystem.expandTexture = getTexture("media/textures/alert/expand.png")
+alertSystem.collapseTexture = getTexture("media/textures/alert/collapse.png")
+alertSystem.alertTextureEmpty = getTexture("media/textures/alert/alertEmpty.png")
+alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
 
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
@@ -19,6 +26,12 @@ function alertSystem:prerender()
         self:drawTextCentre(alertSystem.body, centerX, alertSystem.bodyYOffset, 1, 1, 1, 0.8, alertSystem.bodyFont)
     end
     self:drawRectBorder(0, 0, collapseWidth, self.height, 0.6, 1, 1, 1)
+
+    if not self.collapsed and self.alertSelected > 1 then
+        self:drawRect(0, 0-75, self.width, 75, 0.5, 0, 0, 0)
+        self:drawText(self.alertsLoaded[self.alertSelected], alertSystem.padding/4, 0-75+(alertSystem.padding/4), 1, 1, 1, 0.7, UIFont.AutoNormSmall)
+        self:drawRectBorder(0, 0-75, self.width, 75, 0.4, 1, 1, 1)
+    end
 end
 
 
@@ -64,16 +77,18 @@ end
 
 function alertSystem:onClickAlert()
     if #self.alertsLoaded <= 1 then return end
-    self.collapsed = false
-    self:collapseApply()
+
+    if self.collapsed then
+        self.collapsed = false
+        self:collapseApply()
+    end
+
+    self.alertSelected = self.alertSelected+1
+    if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
 end
 
 
-function alertSystem:receiveAlert(alertMessage)
-    table.insert(self.alertsLoaded, alertMessage)
-    self.alertButton:setImage(self.alertTextureFull)
-    --self.alertTextureEmpty --self.alertTextureFull
-end
+function alertSystem:receiveAlert(alertMessage) table.insert(self.alertsLoaded, alertMessage) end
 
 
 function alertSystem:initialise()
@@ -82,14 +97,8 @@ function alertSystem:initialise()
     local btnHgt = alertSystem.btnHgt
     local btnWid = alertSystem.btnWid
 
-    self.alertSelected = 1
-    self.alertsLoaded = {false}
-
-    self.expandTexture = self.expandTexture or getTexture("media/textures/alert/expand.png")
-    self.collapseTexture = self.collapseTexture or getTexture("media/textures/alert/collapse.png")
-
     self.collapse = ISButton:new(5, self:getHeight()-20, 10, 16, "", self, alertSystem.onClickCollapse)
-    self.collapse:setImage(self.collapseTexture)
+    self.collapse:setImage(alertSystem.collapseTexture)
     self.collapse.borderColor = {r=0, g=0, b=0, a=0}
     self.collapse.backgroundColor = {r=0, g=0, b=0, a=0}
     self.collapse.backgroundColorMouseOver = {r=0, g=0, b=0, a=0}
@@ -97,11 +106,9 @@ function alertSystem:initialise()
     self.collapse:instantiate()
     self:addChild(self.collapse)
 
-    self.alertTextureEmpty = self.alertTextureEmpty or getTexture("media/textures/alert/alertEmpty.png")
-    self.alertTextureFull = self.alertTextureFull or getTexture("media/textures/alert/alertFull.png")
-
     self.alertButton = ISButton:new(0, 0, btnHgt, btnHgt, "", self, alertSystem.onClickAlert)
-    self.alertButton:setImage(self.alertTextureEmpty)
+    local alertImage = #alertSystem.alertsLoaded>=1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+    self.alertButton:setImage(alertImage)
     self.alertButton.borderColor = {r=0, g=0, b=0, a=0}
     self.alertButton.backgroundColor = {r=0, g=0, b=0, a=0}
     self.alertButton.backgroundColorMouseOver = {r=0, g=0, b=0, a=0}
@@ -117,9 +124,8 @@ function alertSystem:initialise()
     self.donate:instantiate()
     self:addChild(self.donate)
 
-    self.rateTexture = self.rateTexture or getTexture("media/textures/alert/rate.png")
     self.rate = ISButton:new(self.donate.x-btnHgt-6, alertSystem.buttonsYOffset-btnHgt, btnHgt, btnHgt, "", self, alertSystem.onClickRate)
-    self.rate:setImage(self.rateTexture)
+    self.rate:setImage(alertSystem.rateTexture)
     self.rate.borderColor = {r=0.39, g=0.66, b=0.3, a=0.9}
     self.rate.backgroundColor = {r=0.07, g=0.13, b=0.19, a=1}
     self.rate:initialise()
@@ -143,6 +149,8 @@ function alertSystem.display(visible)
         local textManager = getTextManager()
         alertSystem.headerFont = UIFont.NewLarge
         alertSystem.bodyFont = UIFont.AutoNormSmall
+
+        alertSystem.bodyFontH = textManager:getFontHeight(alertSystem.bodyFont)
 
         alertSystem.padding = 24
         alertSystem.btnWid = 100
