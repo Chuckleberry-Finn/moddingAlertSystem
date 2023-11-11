@@ -107,7 +107,7 @@ function alertSystem:initialise()
     self:addChild(self.collapse)
 
     self.alertButton = ISButton:new(0, 0, btnHgt, btnHgt, "", self, alertSystem.onClickAlert)
-    local alertImage = #alertSystem.alertsLoaded>=1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+    local alertImage = #alertSystem.alertsLoaded>1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
     self.alertButton:setImage(alertImage)
     self.alertButton.borderColor = {r=0, g=0, b=0, a=0}
     self.alertButton.backgroundColor = {r=0, g=0, b=0, a=0}
