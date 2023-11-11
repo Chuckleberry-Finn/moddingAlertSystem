@@ -21,7 +21,11 @@ function alertSystem:prerender()
     self:drawRectBorder(0, 0, collapseWidth, self.height, 0.6, 1, 1, 1)
 end
 
+function alertSystem:receiveAlert()
 
+    self.newAlert = false
+    self.alert:setVisible(self.newAlert)
+end
 
 function alertSystem:render()
     ISPanelJoypad.render(self)
@@ -60,11 +64,18 @@ function alertSystem:onClickCollapse()
     self:collapseApply()
 end
 
+function alertSystem:onClickAlert()
+    self.collapsed = false
+    self:collapseApply()
+end
+
 function alertSystem:initialise()
     ISPanelJoypad.initialise(self)
 
     local btnHgt = alertSystem.btnHgt
     local btnWid = alertSystem.btnWid
+
+    self.alerts = {}
 
     self.expandTexture = self.expandTexture or getTexture("media/textures/alert/expand.png")
     self.collapseTexture = self.collapseTexture or getTexture("media/textures/alert/collapse.png")
@@ -77,6 +88,19 @@ function alertSystem:initialise()
     self.collapse:initialise()
     self.collapse:instantiate()
     self:addChild(self.collapse)
+
+    self.alertTextureEmpty = self.alertTextureEmpty or getTexture("media/textures/alert/alertEmpty.png")
+    self.alertTextureFull = self.alertTextureFull or getTexture("media/textures/alert/alertFull.png")
+    
+    self.alertButton = ISButton:new(0, 0, btnHgt, btnHgt, "", self, alertSystem.onClickAlert)
+    self.alertButton:setImage(self.alertTexture)
+    self.alertButton.borderColor = {r=0, g=0, b=0, a=0}
+    self.alertButton.backgroundColor = {r=0, g=0, b=0, a=0}
+    self.alertButton.backgroundColorMouseOver = {r=0, g=0, b=0, a=0}
+    self.alertButton:initialise()
+    self.alertButton:instantiate()
+    self:addChild(self.alertButton)
+    self.alertButton:setVisible(false)
 
     self.donate = ISButton:new(((self.width-btnWid)/2), alertSystem.buttonsYOffset-btnHgt, btnWid, btnHgt, "Go to Chuck's Kofi", self, alertSystem.onClickDonate)
     self.donate.borderColor = {r=0.64, g=0.8, b=0.02, a=0.9}
