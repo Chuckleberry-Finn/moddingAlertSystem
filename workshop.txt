@@ -1,6 +1,6 @@
 version=1
 id=3077900375
-title=Chuckleberry Finn Alert System
+title=Chuckleberry Finn News and Alert System
 description=[h2]Utility mod used for news and updates to mods I authored.[/h2]
 description=[h3]Information can be found in a small (collapsible) window found in the main-menu, and the escape-menu.[/h3]
 description=[b]This mod should be loaded before other mods.[/b]
