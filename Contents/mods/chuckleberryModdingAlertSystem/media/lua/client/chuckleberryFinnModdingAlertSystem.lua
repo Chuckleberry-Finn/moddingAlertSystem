@@ -2,13 +2,14 @@ require "ISUI/ISPanelJoypad"
 ---@class alertSystem : ISPanelJoypad
 local alertSystem = ISPanelJoypad:derive("alertSystem")
 
+local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 local modCountSystem = require "chuckleberryFinnModding_modCountSystem"
 
 alertSystem.spiffoTextures = {"media/textures/spiffos/spiffoWatermelon.png"}
 function alertSystem.addTexture(path) table.insert(alertSystem.spiffoTextures, path) end
 
-alertSystem.alertSelected = 1
-alertSystem.alertsLoaded = {false}
+alertSystem.alertSelected = 0
+alertSystem.alertsLoaded = {}
 alertSystem.rateTexture = getTexture("media/textures/alert/rate.png")
 alertSystem.expandTexture = getTexture("media/textures/alert/expand.png")
 alertSystem.collapseTexture = getTexture("media/textures/alert/collapse.png")
@@ -18,19 +19,21 @@ alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
     local collapseWidth = not self.collapsed and self.width or self.collapse.width*2
-    self:drawRect(0, 0, collapseWidth, self.height, 0.5, 0, 0, 0)
+    self:drawRect(0, 0, collapseWidth, self.height, 0.8, 0, 0, 0)
 
     if not self.collapsed then
         local centerX = (self.width/2)
         self:drawTextCentre(alertSystem.header, centerX, alertSystem.headerYOffset, 1, 1, 1, 0.9, alertSystem.headerFont)
-        self:drawTextCentre(alertSystem.body, centerX, alertSystem.bodyYOffset, 1, 1, 1, 0.8, alertSystem.bodyFont)
+        self:drawTextCentre(alertSystem.body, centerX, alertSystem.bodyYOffset, 1, 1, 1, 0.9, alertSystem.bodyFont)
     end
-    self:drawRectBorder(0, 0, collapseWidth, self.height, 0.6, 1, 1, 1)
+    self:drawRectBorder(0, 0, collapseWidth, self.height, 0.8, 1, 1, 1)
 
-    if not self.collapsed and self.alertSelected > 1 then
-        self:drawRect(0, 0-75, self.width, 75, 0.5, 0, 0, 0)
-        self:drawText(self.alertsLoaded[self.alertSelected], alertSystem.padding/4, 0-75+(alertSystem.padding/4), 1, 1, 1, 0.7, UIFont.AutoNormSmall)
-        self:drawRectBorder(0, 0-75, self.width, 75, 0.4, 1, 1, 1)
+    if not self.collapsed and self.alertSelected > 0 then
+        local alertText = self.alertsLoaded[self.alertSelected]
+        local alertH = getTextManager():MeasureStringY(UIFont.AutoNormSmall, alertText) + (alertSystem.padding*2)
+        self:drawRect(0, 0-alertH, self.width, alertH, 0.8, 0, 0, 0)
+        self:drawText(self.alertsLoaded[self.alertSelected], alertSystem.padding/4, 0-alertH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.AutoNormSmall)
+        self:drawRectBorder(0, 0-alertH, self.width, alertH, 0.8, 1, 1, 1)
     end
 end
 
@@ -38,8 +41,17 @@ end
 function alertSystem:render()
     ISPanelJoypad.render(self)
     if alertSystem.spiffoTexture and (not self.collapsed) then
-        local textureYOffset = (self.height-alertSystem.spiffoTexture:getHeight())/2
-        self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.75), textureYOffset, 1, 1, 1, 1)
+        local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
+        self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
+    end
+
+    if #alertSystem.alertsLoaded > 1 then
+        local aB = self.alertButton
+        local label = tostring(#alertSystem.alertsLoaded)
+        if self.alertSelected > 0 then
+            label = tostring(self.alertSelected).."/"..label
+        end
+        aB:drawText(label, aB.x+aB.width, aB.y+3, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
     end
 end
 
@@ -47,8 +59,8 @@ end
 function alertSystem:onClickDonate() openUrl("https://ko-fi.com/chuckleberryfinn") end
 function alertSystem:onClickRate()
     local chucksWorkshop = "https://steamcommunity.com/id/Chuckleberry_Finn/myworkshopfiles/?appid=108600"
-    local openThisURL = self.workshopID and "https://steamcommunity.com/sharedfiles/filedetails/?id="..self.workshopID or chucksWorkshop
-    openUrl(openThisURL)
+    --local openThisURL = self.workshopID and "https://steamcommunity.com/sharedfiles/filedetails/?id="..self.workshopID or chucksWorkshop
+    openUrl(chucksWorkshop)
 end
 
 
@@ -68,6 +80,9 @@ function alertSystem:onClickCollapse()
     self.collapsed = not self.collapsed
 
     local writer = getFileWriter("chuckleberryfinnalertSystem.txt", true, false)
+
+    self.collapse.tooltip = self.collapsed and getText("IGUI_ChuckAlertTooltip_Open") or getText("IGUI_ChuckAlertTooltip_Close")
+
     writer:write("collapsed="..tostring(self.collapsed))
     writer:close()
 
@@ -88,17 +103,35 @@ function alertSystem:onClickAlert()
 end
 
 
-function alertSystem:receiveAlert(alertMessage) table.insert(self.alertsLoaded, alertMessage) end
 
+function alertSystem:hideThis(x, y)
+    self.parent:setVisible(false)
+    self.parent:removeFromUIManager()
+end
+
+function alertSystem:receiveAlert(alertMessage) table.insert(self.alertsLoaded, alertMessage) end
 
 function alertSystem:initialise()
     ISPanelJoypad.initialise(self)
+
+    local latestAlerts = changelog_handler.fetchAllModsLatest()
+    ---latest[modID] = {modName = modName, alerts = alerts}
+    ------alerts = {title = title, contents = contents}
+    for modID,data in pairs(latestAlerts) do
+        for _,alert in pairs(data.alerts) do
+            local msg = alert.title.."\n"..tostring(data.modName).." ("..modID..")\n"..alert.contents
+            self:receiveAlert(msg)
+        end
+    end
 
     local btnHgt = alertSystem.btnHgt
     local btnWid = alertSystem.btnWid
 
     self.collapse = ISButton:new(5, self:getHeight()-20, 10, 16, "", self, alertSystem.onClickCollapse)
     self.collapse:setImage(alertSystem.collapseTexture)
+
+    self.collapse.onRightMouseDown = alertSystem.hideThis
+    self.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Close")
     self.collapse.borderColor = {r=0, g=0, b=0, a=0}
     self.collapse.backgroundColor = {r=0, g=0, b=0, a=0}
     self.collapse.backgroundColorMouseOver = {r=0, g=0, b=0, a=0}
@@ -131,6 +164,7 @@ function alertSystem:initialise()
     self.rate:initialise()
     self.rate:instantiate()
     self:addChild(self.rate)
+
 end
 
 
@@ -156,13 +190,7 @@ function alertSystem.display(visible)
         alertSystem.btnWid = 100
         alertSystem.btnHgt = 20
 
-        if alertSystem.modName==nil then
-            local workshopID = modCountSystem._workshopIDs and modCountSystem._workshopIDs[1]
-            ---@type ChooseGameInfo.Mod
-            local modInfo = workshopID and modCountSystem.workshopIDs[workshopID]
-            alertSystem.modName = modInfo and modInfo:getName() or false
-        end
-        alertSystem.header = alertSystem.modName and "Thank you for using "..alertSystem.modName.."!" or "Hey there!"
+        alertSystem.header = "A message from Chuckleberry Finn"
 
         if modCountSystem.count > 1 then
             alertSystem.header = "Hey there, did you know you're\nusing "..modCountSystem.count.." mods made by Chuck?"
@@ -172,9 +200,9 @@ function alertSystem.display(visible)
         alertSystem.headerH = textManager:MeasureStringY(alertSystem.headerFont, alertSystem.header)
         alertSystem.headerYOffset = alertSystem.padding*0.6
 
-        alertSystem.body = "If you enjoy Chuckleberry Finn's work,\nconsider showing your support."
+        alertSystem.body = getText("IGUI_ChuckAlertDonationMsg")
         alertSystem.bodyW = textManager:MeasureStringX(alertSystem.bodyFont, alertSystem.body)
-        alertSystem.bodyH = textManager:MeasureStringY(alertSystem.bodyFont, alertSystem.body)*2
+        alertSystem.bodyH = textManager:MeasureStringY(alertSystem.bodyFont, alertSystem.body)+alertSystem.btnHgt+alertSystem.padding
         alertSystem.bodyYOffset = alertSystem.headerYOffset+alertSystem.headerH+(alertSystem.padding*0.5)
 
         alertSystem.buttonsYOffset = alertSystem.bodyYOffset+alertSystem.bodyH+(alertSystem.padding*0.5)
@@ -197,7 +225,7 @@ function alertSystem.display(visible)
     if visible ~= false and visible ~= true then visible = MainScreen and MainScreen.instance and MainScreen.instance:isVisible() end
     alert:setVisible(visible)
 
-    local reader = getFileReader("chuckleberryfinnalertSystem.txt", false)
+    local reader = getFileReader("chuckleberryFinn_moddingAlerts_config.txt", false)
     if reader then
         local lines = {}
         local line = reader:readLine()
