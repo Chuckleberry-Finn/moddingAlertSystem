@@ -26,7 +26,9 @@ function alertSystem:prerender()
 
     if not self.collapsed then
         local centerX = (self.width/2)
+
         self:drawTextCentre(alertSystem.header, centerX, alertSystem.headerYOffset, 1, 1, 1, 0.9, alertSystem.headerFont)
+
         if not self.dropMsg then
             self:drawTextCentre(alertSystem.body, centerX, alertSystem.bodyYOffset, 1, 1, 1, 0.9, alertSystem.bodyFont)
         end
@@ -35,9 +37,9 @@ function alertSystem:prerender()
 
     if not self.collapsed and self.alertSelected > 0 then
         local alertText = self.alertsLoaded[self.alertSelected]
-        local alertH = getTextManager():MeasureStringY(UIFont.AutoNormSmall, alertText) + (alertSystem.padding*2)
+        local alertH = getTextManager():MeasureStringY(UIFont.AutoNormSmall, alertText) + (alertSystem.padding)
         self:drawRect(0, 0-alertH, self.width, alertH, 0.8, 0, 0, 0)
-        self:drawText(self.alertsLoaded[self.alertSelected], alertSystem.padding/4, 0-alertH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.AutoNormSmall)
+        self:drawText(self.alertsLoaded[self.alertSelected], alertSystem.padding/3, 0-alertH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.AutoNormSmall)
         self:drawRectBorder(0, 0-alertH, self.width, alertH, 0.8, 1, 1, 1)
     end
 end
@@ -45,10 +47,9 @@ end
 
 function alertSystem:render()
     ISPanelJoypad.render(self)
-    if alertSystem.spiffoTexture and (not self.collapsed) then
-        local scale = self.dropMsg and 0.4 or 1
-        local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight() * scale)
-        self:drawTextureScaledUniform(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, scale, 1, 1, 1, 1)
+    if alertSystem.spiffoTexture and (not self.collapsed) and (not self.dropMsg) then
+        local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
+        self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
     end
 
     if #alertSystem.alertsLoaded > 1 then
@@ -233,8 +234,7 @@ end
 
 
 function alertSystem:adjustWidthToSpiffo(returnValuesOnly)
-    local scale = self.dropMsg and 0.4 or 1
-    local textureW = self.spiffoTexture and (self.spiffoTexture:getWidth() * scale) or 0
+    local textureW = self.dropMsg and 0 or self.spiffoTexture and (self.spiffoTexture:getWidth()) or 0
     local windowW = (math.max(self.headerW,self.bodyW)+(self.padding*2.5))
 
     local expandedX = getCore():getScreenWidth() - windowW - (self.padding*1.5) - (textureW>0 and (textureW-(self.padding*2)) or 0)
@@ -261,7 +261,7 @@ function alertSystem.display(visible)
         end
 
         local textManager = getTextManager()
-        alertSystem.headerFont = UIFont.NewLarge
+        alertSystem.headerFont = UIFont.NewMedium
         alertSystem.bodyFont = UIFont.AutoNormSmall
 
         alertSystem.bodyFontH = textManager:getFontHeight(alertSystem.bodyFont)
@@ -278,7 +278,7 @@ function alertSystem.display(visible)
 
         alertSystem.body = getText("IGUI_ChuckAlertDonationMsg")
         alertSystem.bodyW = textManager:MeasureStringX(alertSystem.bodyFont, alertSystem.body)
-        alertSystem.bodyH = textManager:MeasureStringY(alertSystem.bodyFont, alertSystem.body)+alertSystem.btnHgt+alertSystem.padding
+        alertSystem.bodyH = textManager:MeasureStringY(alertSystem.bodyFont, alertSystem.body)+alertSystem.padding
         alertSystem.bodyYOffset = alertSystem.headerYOffset+alertSystem.headerH+(alertSystem.padding*0.5)
 
         alertSystem.buttonsYOffset = alertSystem.bodyYOffset+alertSystem.bodyH+(alertSystem.padding*0.5)
