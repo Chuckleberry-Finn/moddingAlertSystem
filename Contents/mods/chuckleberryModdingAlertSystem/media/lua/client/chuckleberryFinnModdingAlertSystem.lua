@@ -3,18 +3,21 @@ require "ISUI/ISPanelJoypad"
 local alertSystem = ISPanelJoypad:derive("alertSystem")
 
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
-local modCountSystem = require "chuckleberryFinnModding_modCountSystem"
 
 alertSystem.spiffoTextures = {"media/textures/spiffos/spiffoWatermelon.png"}
 function alertSystem.addTexture(path) table.insert(alertSystem.spiffoTextures, path) end
 
 alertSystem.alertSelected = 0
 alertSystem.alertsLoaded = {}
+alertSystem.alertsOld = 0
 alertSystem.rateTexture = getTexture("media/textures/alert/rate.png")
 alertSystem.expandTexture = getTexture("media/textures/alert/expand.png")
 alertSystem.collapseTexture = getTexture("media/textures/alert/collapse.png")
+alertSystem.raiseTexture = getTexture("media/textures/alert/raise.png")
+alertSystem.dropTexture = getTexture("media/textures/alert/drop.png")
 alertSystem.alertTextureEmpty = getTexture("media/textures/alert/alertEmpty.png")
 alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
+
 
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
@@ -24,7 +27,9 @@ function alertSystem:prerender()
     if not self.collapsed then
         local centerX = (self.width/2)
         self:drawTextCentre(alertSystem.header, centerX, alertSystem.headerYOffset, 1, 1, 1, 0.9, alertSystem.headerFont)
-        self:drawTextCentre(alertSystem.body, centerX, alertSystem.bodyYOffset, 1, 1, 1, 0.9, alertSystem.bodyFont)
+        if not self.dropMsg then
+            self:drawTextCentre(alertSystem.body, centerX, alertSystem.bodyYOffset, 1, 1, 1, 0.9, alertSystem.bodyFont)
+        end
     end
     self:drawRectBorder(0, 0, collapseWidth, self.height, 0.8, 1, 1, 1)
 
@@ -41,8 +46,9 @@ end
 function alertSystem:render()
     ISPanelJoypad.render(self)
     if alertSystem.spiffoTexture and (not self.collapsed) then
-        local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
-        self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
+        local scale = self.dropMsg and 0.4 or 1
+        local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight() * scale)
+        self:drawTextureScaledUniform(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, scale, 1, 1, 1, 1)
     end
 
     if #alertSystem.alertsLoaded > 1 then
@@ -72,21 +78,45 @@ function alertSystem:collapseApply()
         self.collapse:setImage(self.collapsed and self.expandTexture or self.collapseTexture)
     end
 
-    self:setX(not self.collapsed and self.originalX or getCore():getScreenWidth()-(self.collapse.width*2))
+    self:adjustWidthToSpiffo()
+end
+
+function alertSystem:dropApply()
+
+    if self.dropTexture and self.raiseTexture then
+        self.dropMessage:setImage(self.dropMsg and self.raiseTexture or self.dropTexture)
+    end
+
+    local modifyThese = {self.rate, self.donate, self.collapse, self.collapseLabel}
+    local change = self.dropMsg and 0-self.bodyH or self.bodyH
+    self:setHeight(self.height + change)
+    self:setY(self:getY() - change)
+    for _,ui in pairs(modifyThese) do
+        ui:setY(ui:getY() + change)
+    end
+    self:adjustWidthToSpiffo()
 end
 
 
+function alertSystem:saveUILayout()
+    local writer = getFileWriter("chuckleberryFinn_moddingAlerts_config.txt", true, false)
+    writer:write("collapsed="..tostring(self.collapsed).."\n")
+    writer:write("dropMsg="..tostring(self.dropMsg).."\n")
+    writer:close()
+end
+
 function alertSystem:onClickCollapse()
     self.collapsed = not self.collapsed
-
-    local writer = getFileWriter("chuckleberryfinnalertSystem.txt", true, false)
-
     self.collapse.tooltip = self.collapsed and getText("IGUI_ChuckAlertTooltip_Open") or getText("IGUI_ChuckAlertTooltip_Close")
-
-    writer:write("collapsed="..tostring(self.collapsed))
-    writer:close()
-
+    self:saveUILayout()
     self:collapseApply()
+end
+
+
+function alertSystem:onClickDrop()
+    self.dropMsg = not self.dropMsg
+    self:saveUILayout()
+    self:dropApply()
 end
 
 
@@ -109,18 +139,24 @@ function alertSystem:hideThis(x, y)
     self.parent:removeFromUIManager()
 end
 
-function alertSystem:receiveAlert(alertMessage) table.insert(self.alertsLoaded, alertMessage) end
+
+function alertSystem:receiveAlert(alertMessage, old)
+    table.insert(self.alertsLoaded, alertMessage)
+    if old then alertSystem.alertsOld = alertSystem.alertsOld+1 end
+end
+
 
 function alertSystem:initialise()
     ISPanelJoypad.initialise(self)
 
     local latestAlerts = changelog_handler.fetchAllModsLatest()
-    ---latest[modID] = {modName = modName, alerts = alerts}
+    ---latest[modID] = {modName = modName, alerts = alerts, alreadyStored = true}
     ------alerts = {title = title, contents = contents}
-    for modID,data in pairs(latestAlerts) do
-        for _,alert in pairs(data.alerts) do
-            local msg = alert.title.."\n"..tostring(data.modName).." ("..modID..")\n"..alert.contents
-            self:receiveAlert(msg)
+    if latestAlerts then
+        for modID,data in pairs(latestAlerts) do
+            local latest = data.alerts[#data.alerts]
+            local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
+            self:receiveAlert(msg, data.alreadyStored)
         end
     end
 
@@ -129,7 +165,6 @@ function alertSystem:initialise()
 
     self.collapse = ISButton:new(5, self:getHeight()-20, 10, 16, "", self, alertSystem.onClickCollapse)
     self.collapse:setImage(alertSystem.collapseTexture)
-
     self.collapse.onRightMouseDown = alertSystem.hideThis
     self.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Close")
     self.collapse.borderColor = {r=0, g=0, b=0, a=0}
@@ -139,8 +174,22 @@ function alertSystem:initialise()
     self.collapse:instantiate()
     self:addChild(self.collapse)
 
+    self.collapseLabel = ISLabel:new(self.collapse.x+self.collapse.width+5, self:getHeight()-16, 10, getText("IGUI_Collapse"), 1, 1, 1, 1, UIFont.AutoNormSmall, true)
+    self.collapseLabel:initialise()
+    self.collapseLabel:instantiate()
+    self:addChild(self.collapseLabel)
+
+    self.dropMessage = ISButton:new(self:getWidth()-21, 5, 16, 10, "", self, alertSystem.onClickDrop)
+    self.dropMessage:setImage(alertSystem.dropTexture)
+    self.dropMessage.borderColor = {r=0, g=0, b=0, a=0}
+    self.dropMessage.backgroundColor = {r=0, g=0, b=0, a=0}
+    self.dropMessage.backgroundColorMouseOver = {r=0, g=0, b=0, a=0}
+    self.dropMessage:initialise()
+    self.dropMessage:instantiate()
+    self:addChild(self.dropMessage)
+
     self.alertButton = ISButton:new(0, 0, btnHgt, btnHgt, "", self, alertSystem.onClickAlert)
-    local alertImage = #alertSystem.alertsLoaded>1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+    local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
     self.alertButton:setImage(alertImage)
     self.alertButton.borderColor = {r=0, g=0, b=0, a=0}
     self.alertButton.backgroundColor = {r=0, g=0, b=0, a=0}
@@ -149,7 +198,7 @@ function alertSystem:initialise()
     self.alertButton:instantiate()
     self:addChild(self.alertButton)
 
-    self.donate = ISButton:new(((self.width-btnWid)/2), alertSystem.buttonsYOffset-btnHgt, btnWid, btnHgt, "Go to Chuck's Kofi", self, alertSystem.onClickDonate)
+    self.donate = ISButton:new(((self.width-btnWid)/2), alertSystem.buttonsYOffset-(btnHgt/2), btnWid, btnHgt, "Go to Chuck's Kofi", self, alertSystem.onClickDonate)
     self.donate.borderColor = {r=0.64, g=0.8, b=0.02, a=0.9}
     self.donate.backgroundColor = {r=0, g=0, b=0, a=0.6}
     self.donate.textColor = {r=0.64, g=0.8, b=0.02, a=1}
@@ -157,7 +206,7 @@ function alertSystem:initialise()
     self.donate:instantiate()
     self:addChild(self.donate)
 
-    self.rate = ISButton:new(self.donate.x-btnHgt-6, alertSystem.buttonsYOffset-btnHgt, btnHgt, btnHgt, "", self, alertSystem.onClickRate)
+    self.rate = ISButton:new(self.donate.x-btnHgt-6, alertSystem.buttonsYOffset-(btnHgt/2), btnHgt, btnHgt, "", self, alertSystem.onClickRate)
     self.rate:setImage(alertSystem.rateTexture)
     self.rate.borderColor = {r=0.39, g=0.66, b=0.3, a=0.9}
     self.rate.backgroundColor = {r=0.07, g=0.13, b=0.19, a=1}
@@ -168,9 +217,25 @@ function alertSystem:initialise()
 end
 
 
-function alertSystem.display(visible)
+function alertSystem:adjustWidthToSpiffo(returnValuesOnly)
+    local scale = self.dropMsg and 0.4 or 1
+    local textureW = self.spiffoTexture and (self.spiffoTexture:getWidth() * scale) or 0
+    local windowW = (math.max(self.headerW,self.bodyW)+(self.padding*2.5))
 
-    modCountSystem.countInstalled()
+    local expandedX = getCore():getScreenWidth() - windowW - (self.padding*1.5) - (textureW>0 and (textureW-(self.padding*2)) or 0)
+    local collapsedX = getCore():getScreenWidth()-20
+
+    local x = self.collapsed and collapsedX or expandedX
+
+    if returnValuesOnly then
+        return x, windowW
+    end
+
+    self:setX(x)
+end
+
+
+function alertSystem.display(visible)
 
     local alert = MainScreen.instance.donateAlert
     if not MainScreen.instance.donateAlert then
@@ -192,13 +257,9 @@ function alertSystem.display(visible)
 
         alertSystem.header = "A message from Chuckleberry Finn"
 
-        if modCountSystem.count > 1 then
-            alertSystem.header = "Hey there, did you know you're\nusing "..modCountSystem.count.." mods made by Chuck?"
-        end
-
         alertSystem.headerW = textManager:MeasureStringX(alertSystem.headerFont, alertSystem.header)
         alertSystem.headerH = textManager:MeasureStringY(alertSystem.headerFont, alertSystem.header)
-        alertSystem.headerYOffset = alertSystem.padding*0.6
+        alertSystem.headerYOffset = alertSystem.padding*0.4
 
         alertSystem.body = getText("IGUI_ChuckAlertDonationMsg")
         alertSystem.bodyW = textManager:MeasureStringX(alertSystem.bodyFont, alertSystem.body)
@@ -207,13 +268,14 @@ function alertSystem.display(visible)
 
         alertSystem.buttonsYOffset = alertSystem.bodyYOffset+alertSystem.bodyH+(alertSystem.padding*0.5)
 
-        local textureW = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getWidth() or 0
+        --local textureW = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getWidth() or 0
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
 
-        local windowW = (math.max(alertSystem.headerW,alertSystem.bodyW)+(alertSystem.padding*2.5))
+        --local windowW = (math.max(alertSystem.headerW,alertSystem.bodyW)+(alertSystem.padding*2.5))
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
 
-        local x = getCore():getScreenWidth() - windowW - (alertSystem.padding*1.5) - (textureW>0 and (textureW-(alertSystem.padding*2)) or 0)
+        local x, windowW = alertSystem:adjustWidthToSpiffo(true)
+        --local x = getCore():getScreenWidth() - windowW - (alertSystem.padding*1.5) - (textureW>0 and (textureW-(alertSystem.padding*2)) or 0)
         local y = getCore():getScreenHeight() - math.max(windowH,textureH) - 80 - alertSystem.padding
 
         alert = alertSystem:new(x, y, windowW, windowH)
@@ -243,6 +305,7 @@ function alertSystem.display(visible)
             alert[param] = setValue
         end
         alert:collapseApply()
+        alert:dropApply()
     end
 end
 
