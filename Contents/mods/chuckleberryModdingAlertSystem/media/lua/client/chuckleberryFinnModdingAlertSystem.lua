@@ -77,24 +77,24 @@ function alertSystem:collapseApply()
     if self.collapseTexture and self.expandTexture then
         self.collapse:setImage(self.collapsed and self.expandTexture or self.collapseTexture)
     end
-
     self:adjustWidthToSpiffo()
 end
 
-function alertSystem:dropApply()
+function alertSystem:dropApply(bypass)
 
     if self.dropTexture and self.raiseTexture then
         self.dropMessage:setImage(self.dropMsg and self.raiseTexture or self.dropTexture)
     end
 
+    local drop = self.dropMsg or self.collapsed
+
     local modifyThese = {self.rate, self.donate, self.collapse, self.collapseLabel}
-    local change = self.dropMsg and 0-self.bodyH or self.bodyH
-    self:setHeight(self.height + change)
-    self:setY(self:getY() - change)
+    self:setHeight(drop and self.originalH-self.bodyH or self.originalH)
+    self:setY(drop and self.originalY+self.bodyH or self.originalY)
     for _,ui in pairs(modifyThese) do
-        ui:setY(ui:getY() + change)
+        ui:setY(drop and ui.originalY-self.bodyH or ui.originalY)
     end
-    self:adjustWidthToSpiffo()
+    if (bypass == nil) then self:adjustWidthToSpiffo() end
 end
 
 
@@ -109,6 +109,7 @@ function alertSystem:onClickCollapse()
     self.collapsed = not self.collapsed
     self.collapse.tooltip = self.collapsed and getText("IGUI_ChuckAlertTooltip_Open") or getText("IGUI_ChuckAlertTooltip_Close")
     self:saveUILayout()
+    self:dropApply(true)
     self:collapseApply()
 end
 
@@ -164,6 +165,7 @@ function alertSystem:initialise()
     local btnWid = alertSystem.btnWid
 
     self.collapse = ISButton:new(5, self:getHeight()-20, 10, 16, "", self, alertSystem.onClickCollapse)
+    self.collapse.originalY = self.collapse.y
     self.collapse:setImage(alertSystem.collapseTexture)
     self.collapse.onRightMouseDown = alertSystem.hideThis
     self.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Close")
@@ -175,6 +177,7 @@ function alertSystem:initialise()
     self:addChild(self.collapse)
 
     self.collapseLabel = ISLabel:new(self.collapse.x+self.collapse.width+5, self:getHeight()-16, 10, getText("IGUI_Collapse"), 1, 1, 1, 1, UIFont.AutoNormSmall, true)
+    self.collapseLabel.originalY = self.collapseLabel.y
     self.collapseLabel:initialise()
     self.collapseLabel:instantiate()
     self:addChild(self.collapseLabel)
@@ -199,6 +202,7 @@ function alertSystem:initialise()
     self:addChild(self.alertButton)
 
     self.donate = ISButton:new(((self.width-btnWid)/2), alertSystem.buttonsYOffset-(btnHgt/2), btnWid, btnHgt, "Go to Chuck's Kofi", self, alertSystem.onClickDonate)
+    self.donate.originalY = self.donate.y
     self.donate.borderColor = {r=0.64, g=0.8, b=0.02, a=0.9}
     self.donate.backgroundColor = {r=0, g=0, b=0, a=0.6}
     self.donate.textColor = {r=0.64, g=0.8, b=0.02, a=1}
@@ -207,6 +211,7 @@ function alertSystem:initialise()
     self:addChild(self.donate)
 
     self.rate = ISButton:new(self.donate.x-btnHgt-6, alertSystem.buttonsYOffset-(btnHgt/2), btnHgt, btnHgt, "", self, alertSystem.onClickRate)
+    self.rate.originalY = self.rate.y
     self.rate:setImage(alertSystem.rateTexture)
     self.rate.borderColor = {r=0.39, g=0.66, b=0.3, a=0.9}
     self.rate.backgroundColor = {r=0.07, g=0.13, b=0.19, a=1}
@@ -316,6 +321,8 @@ function alertSystem:new(x, y, width, height)
     self.__index = self
     o.borderColor, o.backgroundColor = {r=0, g=0, b=0, a=0}, {r=0, g=0, b=0, a=0}
     o.originalX = x
+    o.originalY = y
+    o.originalH = height
     o.width, o.height =  width, height
     return o
 end
