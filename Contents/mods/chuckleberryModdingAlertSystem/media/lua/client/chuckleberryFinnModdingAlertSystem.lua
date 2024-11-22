@@ -271,7 +271,7 @@ function alertSystem.display(visible)
         alertSystem.btnWid = 100
         alertSystem.btnHgt = 20
 
-        alertSystem.header = "A message from Chuckleberry Finn"
+        alertSystem.header = getText("IGUI_ChuckAlertHeaderMsg")
 
         alertSystem.headerW = textManager:MeasureStringX(alertSystem.headerFont, alertSystem.header)
         alertSystem.headerH = textManager:MeasureStringY(alertSystem.headerFont, alertSystem.header)
