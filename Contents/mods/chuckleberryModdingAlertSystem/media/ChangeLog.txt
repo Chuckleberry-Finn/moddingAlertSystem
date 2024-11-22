@@ -4,3 +4,8 @@ New and working alert system.
 - Right click to hide system for rest of session (per Lua load).
 - Shows items in changeLog per mod.
 [ ------ ]
+
+[ 11/22/24 #2 ]
+- Shifted UI for collapsed alert over a bit.
+- Added message-header to translatable text.
+[ ------ ]
