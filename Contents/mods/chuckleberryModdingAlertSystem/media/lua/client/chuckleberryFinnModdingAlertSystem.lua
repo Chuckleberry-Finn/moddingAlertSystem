@@ -21,7 +21,7 @@ alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
 
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
-    local collapseWidth = not self.collapsed and self.width or self.collapse.width*2
+    local collapseWidth = not self.collapsed and self.width or self.collapse.width+10
     self:drawRect(0, 0, collapseWidth, self.height, 0.8, 0, 0, 0)
 
     if not self.collapsed then
@@ -238,7 +238,7 @@ function alertSystem:adjustWidthToSpiffo(returnValuesOnly)
     local windowW = (math.max(self.headerW,self.bodyW)+(self.padding*2.5))
 
     local expandedX = getCore():getScreenWidth() - windowW - (self.padding*1.5) - (textureW>0 and (textureW-(self.padding*2)) or 0)
-    local collapsedX = getCore():getScreenWidth()-20
+    local collapsedX = getCore():getScreenWidth()-30
 
     local x = self.collapsed and collapsedX or expandedX
 
