@@ -1,0 +1,6 @@
+[ 11/22/24 ]
+New and working alert system.
+- Saves collapse of system and message.
+- Right click to hide system for rest of session (per Lua load).
+- Shows items in changeLog per mod.
+[ ------ ]

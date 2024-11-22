@@ -1,12 +1,19 @@
 version=1
 id=3077900375
-title=Chuckleberry Finn News and Alert System
+title=Mod Update and Alert System
 description=[h2]Utility mod used for news and updates to mods I authored.[/h2]
+description=[i]Or any other mod utilizing my ChangeLog.txt format. More information below.[/i]
 description=[h3]Information can be found in a small (collapsible) window found in the main-menu, and the escape-menu.[/h3]
+description=[h3]Further more, right-clicking the collapse button will hide the system for the rest of the session. (per Lua load)[/h3]
 description=[b]This mod should be loaded after all other mods.[/b]
 description=
+description=If you're interested in utilizing this system to display change-logs all you have to do is create a text file named 'ChangeLog.txt' within your mod's media folder.
+description=This mod includes a working example, but the format would be:
+description=[quote][ header ]<br>line<br>line<br>[ ------ ][/quote]
+description=Note the footer and header must be within spaced square brackets, and the footer must have six hyphens.
+description=Also, uploading your mod to the workshop will automatically populate the Steam changelog with the last entry - if the mod is enabled on the main menu.
 description=
-description=[url=https://ko-fi.com/chuckleberryfinn][img]https://raw.githubusercontent.com/ChuckTheSheep/chuckImages/main/kofi.png[/img][/url]
+description=[url=https://ko-fi.com/chuckleberryfinn][img]https://raw.githubusercontent.com/ChuckTheSheep/chuckImages/main/kofi_big.png[/img][/url]
 description=
 description=[url=https://discord.gg/SReMnbV4V7][img]https://raw.githubusercontent.com/Chuckleberry-Finn/chuckImages/main/PZmodCommBanner2.png[/img][/url]
 description=

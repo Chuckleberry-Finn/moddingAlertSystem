@@ -56,8 +56,10 @@ function alertSystem:render()
         local label = tostring(#alertSystem.alertsLoaded)
         if self.alertSelected > 0 then
             label = tostring(self.alertSelected).."/"..label
+        else
+            label = getText("IGUI_ChuckAlertSeeAlerts", label, (#alertSystem.alertsLoaded>0 and "s" or "") )
         end
-        aB:drawText(label, aB.x+aB.width, aB.y+3, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
+        aB:drawText(label, 32, 7, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
     end
 end
 
@@ -73,6 +75,7 @@ end
 function alertSystem:collapseApply()
     self.rate:setVisible(not self.collapsed)
     self.donate:setVisible(not self.collapsed)
+    self.collapseLabel:setVisible(not self.collapsed)
 
     if self.collapseTexture and self.expandTexture then
         self.collapse:setImage(self.collapsed and self.expandTexture or self.collapseTexture)
@@ -130,7 +133,7 @@ function alertSystem:onClickAlert()
     end
 
     self.alertSelected = self.alertSelected+1
-    if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
+    if self.alertSelected > #self.alertsLoaded then self.alertSelected = 0 end
 end
 
 
@@ -138,6 +141,11 @@ end
 function alertSystem:hideThis(x, y)
     self.parent:setVisible(false)
     self.parent:removeFromUIManager()
+end
+
+
+function alertSystem:hideAlert(x, y)
+    self.parent.alertSelected = 0
 end
 
 
@@ -164,7 +172,7 @@ function alertSystem:initialise()
     local btnHgt = alertSystem.btnHgt
     local btnWid = alertSystem.btnWid
 
-    self.collapse = ISButton:new(5, self:getHeight()-20, 10, 16, "", self, alertSystem.onClickCollapse)
+    self.collapse = ISButton:new(0, self:getHeight()-48, 48, 48, "", self, alertSystem.onClickCollapse)
     self.collapse.originalY = self.collapse.y
     self.collapse:setImage(alertSystem.collapseTexture)
     self.collapse.onRightMouseDown = alertSystem.hideThis
@@ -176,13 +184,13 @@ function alertSystem:initialise()
     self.collapse:instantiate()
     self:addChild(self.collapse)
 
-    self.collapseLabel = ISLabel:new(self.collapse.x+self.collapse.width+5, self:getHeight()-16, 10, getText("IGUI_Collapse"), 1, 1, 1, 1, UIFont.AutoNormSmall, true)
+    self.collapseLabel = ISLabel:new(self.collapse.x+17, self:getHeight()-17, 10, getText("IGUI_ChuckAlertCollapse"), 1, 1, 1, 1, UIFont.AutoNormSmall, true)
     self.collapseLabel.originalY = self.collapseLabel.y
     self.collapseLabel:initialise()
     self.collapseLabel:instantiate()
     self:addChild(self.collapseLabel)
 
-    self.dropMessage = ISButton:new(self:getWidth()-21, 5, 16, 10, "", self, alertSystem.onClickDrop)
+    self.dropMessage = ISButton:new(self:getWidth()-48, 0, 48, 48, "", self, alertSystem.onClickDrop)
     self.dropMessage:setImage(alertSystem.dropTexture)
     self.dropMessage.borderColor = {r=0, g=0, b=0, a=0}
     self.dropMessage.backgroundColor = {r=0, g=0, b=0, a=0}
@@ -191,9 +199,11 @@ function alertSystem:initialise()
     self.dropMessage:instantiate()
     self:addChild(self.dropMessage)
 
-    self.alertButton = ISButton:new(0, 0, btnHgt, btnHgt, "", self, alertSystem.onClickAlert)
+    self.alertButton = ISButton:new(0, 0, 48, 48, "", self, alertSystem.onClickAlert)
     local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
     self.alertButton:setImage(alertImage)
+    self.alertButton.tooltip = getText("IGUI_ChuckAlertAlertButtonTooltip")
+    self.alertButton.onRightMouseDown = alertSystem.hideAlert
     self.alertButton.borderColor = {r=0, g=0, b=0, a=0}
     self.alertButton.backgroundColor = {r=0, g=0, b=0, a=0}
     self.alertButton.backgroundColorMouseOver = {r=0, g=0, b=0, a=0}
