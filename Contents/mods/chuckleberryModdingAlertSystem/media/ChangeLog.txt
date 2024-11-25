@@ -9,3 +9,7 @@ New and working alert system.
 - Shifted UI for collapsed alert over a bit.
 - Added message-header to translatable text.
 [ ------ ]
+
+[ 11/24/24 ]
+- Fixes edge case with update logs.
+[ ------ ]
