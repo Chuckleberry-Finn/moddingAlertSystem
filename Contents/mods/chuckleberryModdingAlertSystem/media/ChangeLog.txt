@@ -13,3 +13,7 @@ New and working alert system.
 [ 11/24/24 ]
 - Fixes edge case with update logs.
 [ ------ ]
+
+[ 12/20/24 ]
+- Fix edge case with alert display.
+[ ------ ]

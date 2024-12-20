@@ -291,7 +291,6 @@ function alertSystem.display(visible)
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
 
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        --local x = getCore():getScreenWidth() - windowW - (alertSystem.padding*1.5) - (textureW>0 and (textureW-(alertSystem.padding*2)) or 0)
         local y = getCore():getScreenHeight() - math.max(windowH,textureH) - 110 - alertSystem.padding
 
         alert = alertSystem:new(x, y, windowW, windowH)

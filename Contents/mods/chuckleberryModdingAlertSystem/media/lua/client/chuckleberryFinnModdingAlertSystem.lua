@@ -52,7 +52,7 @@ function alertSystem:render()
         self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
     end
 
-    if #alertSystem.alertsLoaded > 1 then
+    if #alertSystem.alertsLoaded > 0 then
         local aB = self.alertButton
         local label = tostring(#alertSystem.alertsLoaded)
         if self.alertSelected > 0 then
@@ -126,7 +126,8 @@ end
 
 
 function alertSystem:onClickAlert()
-    if #self.alertsLoaded <= 1 then return end
+    print("test_click_alert: ", #self.alertsLoaded)
+    if #self.alertsLoaded < 1 then return end
 
     if self.collapsed then
         self.collapsed = false
@@ -163,7 +164,9 @@ function alertSystem:initialise()
     ---latest[modID] = {modName = modName, alerts = alerts, alreadyStored = true}
     ------alerts = {title = title, contents = contents}
     if latestAlerts then
+        print("LATEST FOUND")
         for modID,data in pairs(latestAlerts) do
+            print(" -- :", modID)
             local latest = data.alerts[#data.alerts]
             local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
             self:receiveAlert(msg, data.alreadyStored)
@@ -291,11 +294,7 @@ function alertSystem.display(visible)
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
 
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        --local x = getCore():getScreenWidth() - windowW - (alertSystem.padding*1.5) - (textureW>0 and (textureW-(alertSystem.padding*2)) or 0)
-
-        local y_shift = MainScreen.instance and MainScreen.instance.resetLua and MainScreen.instance.resetLua.y+10 or 80
-
-        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - y_shift - alertSystem.padding
+        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - 110 - alertSystem.padding
 
         alert = alertSystem:new(x, y, windowW, windowH)
         alert:initialise()
