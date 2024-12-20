@@ -204,7 +204,7 @@ function alertSystem:initialise()
     self:addChild(self.dropMessage)
 
     self.alertButton = ISButton:new(0, 0, 48, 48, "", self, alertSystem.onClickAlert)
-    local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+    local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
     self.alertButton:setImage(alertImage)
     self.alertButton.tooltip = getText("IGUI_ChuckAlertAlertButtonTooltip")
     self.alertButton.onRightMouseDown = alertSystem.hideAlert

@@ -52,7 +52,7 @@ function alertSystem:render()
         self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
     end
 
-    if #alertSystem.alertsLoaded > 1 then
+    if #alertSystem.alertsLoaded > 0 then
         local aB = self.alertButton
         local label = tostring(#alertSystem.alertsLoaded)
         if self.alertSelected > 0 then
@@ -126,7 +126,7 @@ end
 
 
 function alertSystem:onClickAlert()
-    if #self.alertsLoaded <= 1 then return end
+    if #self.alertsLoaded < 1 then return end
 
     if self.collapsed then
         self.collapsed = false
@@ -201,7 +201,7 @@ function alertSystem:initialise()
     self:addChild(self.dropMessage)
 
     self.alertButton = ISButton:new(0, 0, 48, 48, "", self, alertSystem.onClickAlert)
-    local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>1 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+    local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
     self.alertButton:setImage(alertImage)
     self.alertButton.tooltip = getText("IGUI_ChuckAlertAlertButtonTooltip")
     self.alertButton.onRightMouseDown = alertSystem.hideAlert
