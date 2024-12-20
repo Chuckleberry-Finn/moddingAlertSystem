@@ -66,9 +66,8 @@ end
 function changelog_handler.fetchMod(modID, latest)
 
     local reader = getModFileReader(modID, getFileSeparator().."ChangeLog.txt", false)
-
     if not reader then --- old position for 41
-        getModFileReader(modID, getFileSeparator().."media"..getFileSeparator().."ChangeLog.txt", false)
+        reader = getModFileReader(modID, getFileSeparator().."media"..getFileSeparator().."ChangeLog.txt", false)
     end
 
     if not reader then return end
