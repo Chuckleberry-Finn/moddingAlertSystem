@@ -1,8 +1,8 @@
 id=ChuckleberryFinnAlertSystem
-name=Mod Update and Alert System
+name=[Optional] Mod Update and Alert System
 description=Utility mod used for news and updates.
 poster=poster.png
-versionMin=42.0
-require=\errorMagnifier,
+tags=Build 41
+versionMin=41.0
 
 

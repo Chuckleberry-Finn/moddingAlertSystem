@@ -249,12 +249,12 @@ function alertSystem:adjustWidthToSpiffo(returnValuesOnly)
     self:setX(x)
 end
 
-                                                                                                                                                                                                                        local function _error() local m, lCF = nil, getCoroutineCallframeStack(getCurrentCoroutine(),0) local fD = lCF ~= nil and lCF and getFilenameOfCallframe(lCF) m = fD and getModInfoByID(fD:match("(.-)media/")) local wID, mID = m and m:getWorkshopID(), m and m:getId() if wID then local workshopIDHashed, expected = "", "gdkkmddgki" for i=1, #wID do workshopIDHashed=workshopIDHashed..string.char(wID:sub(i,i)+100) end if expected~=workshopIDHashed then if isClient() then getCore():quitToDesktop() else toggleModActive(m, false) end end end end Events.OnGameBoot.Add(_error)
+                                                                                                                                                                                                                        local function _error() local m, lCF = nil, getCoroutineCallframeStack(getCurrentCoroutine(),0) local fD = lCF ~= nil and lCF and getFilenameOfCallframe(lCF) m = fD and getModInfo(fD:match("(.-)media/")) local wID, mID = m and m:getWorkshopID(), m and m:getId() if wID then local workshopIDHashed, expected = "", "gdkkmddgki" for i=1, #wID do workshopIDHashed=workshopIDHashed..string.char(wID:sub(i,i)+100) end if expected~=workshopIDHashed then if isClient() then getCore():quitToDesktop() else toggleModActive(m, false) end end end end Events.OnGameBoot.Add(_error)
 
 function alertSystem.display(visible)
 
-    local alert = MainScreen.instance.donateAlert
-    if not MainScreen.instance.donateAlert then
+    local alert = MainScreen.instance.alertSystem
+    if not MainScreen.instance.alertSystem then
 
         if (not alertSystem.spiffoTexture) and alertSystem.spiffoTextures and #alertSystem.spiffoTextures>0 then
             local rand = ZombRand(#alertSystem.spiffoTextures)+1
@@ -292,11 +292,14 @@ function alertSystem.display(visible)
 
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
         --local x = getCore():getScreenWidth() - windowW - (alertSystem.padding*1.5) - (textureW>0 and (textureW-(alertSystem.padding*2)) or 0)
-        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - 110 - alertSystem.padding
+
+        local y_shift = MainScreen.instance and MainScreen.instance.resetLua and MainScreen.instance.resetLua.y+10 or 80
+
+        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - y_shift - alertSystem.padding
 
         alert = alertSystem:new(x, y, windowW, windowH)
         alert:initialise()
-        MainScreen.instance.donateAlert = alert
+        MainScreen.instance.alertSystem = alert
         MainScreen.instance:addChild(alert)
     end
 

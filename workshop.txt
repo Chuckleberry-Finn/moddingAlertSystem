@@ -1,10 +1,7 @@
 version=1
 id=3077900375
-title=[Optional] Mod Update and Alert System
-description=[h2]If you've been asked to download this mod by Steam:[/h2]
-description=[h2][b]This mod is optional and not truly required, just highly recommended.[/b][/h2]
-description=[h3]I've added it on as a required mod on steam just to nudge that recommendation.[/h3]
-description=
+title=Mod Update and Alert System
+description=[h2]This mod is optional on B41, and [b]required on B42[/b].[/h2]
 description=
 description=[h2]Utility mod used for news and updates to mods I authored.[/h2]
 description=[i]Or any other mod utilizing my ChangeLog.txt format. More information below.[/i]

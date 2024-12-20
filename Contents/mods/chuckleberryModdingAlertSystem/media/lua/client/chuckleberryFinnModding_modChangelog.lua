@@ -4,7 +4,6 @@ changelog_handler.scannedMods = nil--{}
 changelog_handler.freshAlerts = nil--{}
 
 function changelog_handler.scanMods()
-
     changelog_handler.scannedMods = {}
     local reader = getFileReader("chuckleberryFinn_moddingAlerts.txt", true)
     if reader then
@@ -26,20 +25,20 @@ function changelog_handler.scanMods()
 end
 
 
-
 function changelog_handler.fetchAllModsLatest()
 
     if not changelog_handler.scannedMods then changelog_handler.scanMods() end
 
     local latest = nil--{}
-    local writer = getFileWriter("chuckleberryFinn_moddingAlerts.txt", true, false)
-    local activeModIDs = getActivatedMods()
 
+    local writer = getFileWriter("chuckleberryFinn_moddingAlerts.txt", true, false)
+
+    local activeModIDs = getActivatedMods()
     for i=1,activeModIDs:size() do
         local modID = activeModIDs:get(i-1)
         local modInfo = getModInfoByID(modID)
-        local modName = modInfo and modInfo:getName()
-        local latestTitleStored = changelog_handler.scannedMods and changelog_handler.scannedMods[modID]
+        local modName = modInfo:getName()
+        local latestTitleStored = changelog_handler.scannedMods[modID]
         local alerts = changelog_handler.fetchMod(modID, latestTitleStored)
         if alerts then
             local latestCurrent = alerts[#alerts]
