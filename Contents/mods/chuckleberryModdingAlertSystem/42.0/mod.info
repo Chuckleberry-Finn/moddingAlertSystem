@@ -4,6 +4,5 @@ description=Utility mod used for news and updates.
 poster=poster.png
 author=Chuckleberry Finn
 versionMin=42.0
-require=\errorMagnifier,
 
 
