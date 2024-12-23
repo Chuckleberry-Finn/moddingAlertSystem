@@ -18,5 +18,5 @@ description=
 description=[url=https://discord.gg/SReMnbV4V7][img]https://raw.githubusercontent.com/Chuckleberry-Finn/chuckImages/main/PZmodCommBanner2.png[/img][/url]
 description=
 description=[h3]Copyright 2024 Chuckleberry Finn. This item is not authorized for posting on Steam, except under the Steam account named Chuckleberry Finn.[/h3]
-tags=Build 41;Framework;Misc
+tags=Build 41;Build 42;Framework;Interface;Misc;QoL
 visibility=public
