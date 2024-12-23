@@ -5,13 +5,15 @@ local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 local function WorkshopSubmitScreen_generateChangelog(workshopItem)
     if not workshopItem or workshopItem:getChangeNote() ~= "" then return end
 
+
+
     local desc = workshopItem:getSubmitDescription()
     local mod_ids = {}
 
     for line in desc:gmatch("[^\r\n]+") do
         local mod_id = line:match("^Mod ID:%s*(.+)$")
         if mod_id then
-            table.insert(mod_ids, mod_id)
+            table.insert(mod_ids, "\\"..mod_id)
         end
     end
 
