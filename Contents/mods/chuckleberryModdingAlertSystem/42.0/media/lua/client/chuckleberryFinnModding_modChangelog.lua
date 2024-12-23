@@ -37,8 +37,13 @@ function changelog_handler.fetchAllModsLatest()
 
     for i=1,activeModIDs:size() do
         local modID = activeModIDs:get(i-1)
+
         local modInfo = getModInfoByID(modID)
+        --print(" -- modInfo:"..tostring(modInfo).. "  modID: "..modID)
         local modName = modInfo and modInfo:getName()
+
+        --local modDir = modInfo:getDir()
+
         local latestTitleStored = changelog_handler.scannedMods and changelog_handler.scannedMods[modID]
         local alerts = changelog_handler.fetchMod(modID, latestTitleStored)
         if alerts then
@@ -48,7 +53,7 @@ function changelog_handler.fetchAllModsLatest()
             latest = latest or {}
             latest[modID] = {modName = modName, alerts = alerts}
 
-            print("THIS IS 42: modID:",modID,"   latestTitleStored:",latestTitleStored,"   lCTitle:",lCTitle)
+            --print("THIS IS 42: modID:",modID,"   latestTitleStored:",latestTitleStored,"   lCTitle:",lCTitle)
             if latestTitleStored and latestTitleStored == lCTitle then
                 latest[modID].alreadyStored = true
             end
@@ -65,9 +70,18 @@ end
 
 function changelog_handler.fetchMod(modID, latest)
 
-    local reader = getModFileReader(modID, getFileSeparator().."ChangeLog.txt", false)
-    if not reader then --- old position for 41
-        reader = getModFileReader(modID, getFileSeparator().."media"..getFileSeparator().."ChangeLog.txt", false)
+    --[[
+    local mDir = modDir:gsub("\\", "/")
+    mDir = mDir:match("(.*)/$") or mDir
+    mDir = mDir:match(".*/.*/(.*)$")
+    --]]
+
+    local reader = getModFileReader(modID, "ChangeLog.txt", false)
+
+    --print(" --- "..tostring(mDir)..getFileSeparator().."ChangeLog.txt")
+
+    if not reader then
+        print(" no reader: ")--..tostring(modDir).."   "..tostring(mDir))
     end
 
     if not reader then return end

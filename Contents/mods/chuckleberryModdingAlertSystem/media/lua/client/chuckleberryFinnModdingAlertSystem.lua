@@ -126,7 +126,7 @@ end
 
 
 function alertSystem:onClickAlert()
-    print("test_click_alert: ", #self.alertsLoaded)
+    --print("test_click_alert: ", #self.alertsLoaded)
     if #self.alertsLoaded < 1 then return end
 
     if self.collapsed then
@@ -164,9 +164,9 @@ function alertSystem:initialise()
     ---latest[modID] = {modName = modName, alerts = alerts, alreadyStored = true}
     ------alerts = {title = title, contents = contents}
     if latestAlerts then
-        print("LATEST FOUND")
+        --print("LATEST FOUND")
         for modID,data in pairs(latestAlerts) do
-            print(" -- :", modID)
+            --print(" -- :", modID)
             local latest = data.alerts[#data.alerts]
             local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
             self:receiveAlert(msg, data.alreadyStored)
