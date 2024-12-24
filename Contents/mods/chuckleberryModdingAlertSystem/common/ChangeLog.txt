@@ -20,5 +20,9 @@ New and working alert system.
 
 [ 12/23/24 ]
 - Fixed issues with B41/B42 not able to mutually read change logs.
-- Moved changelog's placement into `common`
+- Moved changelog's placement into `common`.
+[ ------ ]
+
+[ 12/23/24 hotfix #1 ]
+- Fixed issue with hiding the system.
 [ ------ ]

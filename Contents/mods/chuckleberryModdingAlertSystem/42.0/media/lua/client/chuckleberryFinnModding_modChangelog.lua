@@ -49,7 +49,7 @@ function changelog_handler.fetchAllModsLatest()
 
             latest = latest or {}
             latest[modID] = {modName = modName, alerts = alerts}
-            
+
             if latestTitleStored and latestTitleStored == lCTitle then
                 latest[modID].alreadyStored = true
             end

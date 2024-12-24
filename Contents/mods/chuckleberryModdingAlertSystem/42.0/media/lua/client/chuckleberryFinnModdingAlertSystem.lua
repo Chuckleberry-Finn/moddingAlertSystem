@@ -18,6 +18,7 @@ alertSystem.dropTexture = getTexture("media/textures/alert/drop.png")
 alertSystem.alertTextureEmpty = getTexture("media/textures/alert/alertEmpty.png")
 alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
 
+local hidden_per_session = false
 
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
@@ -142,6 +143,7 @@ end
 function alertSystem:hideThis(x, y)
     self.parent:setVisible(false)
     self.parent:removeFromUIManager()
+    hidden_per_session = true
 end
 
 
@@ -252,6 +254,8 @@ end
 --                                                                                                                                                                                                                        local function _error() local m, lCF = nil, getCoroutineCallframeStack(getCurrentCoroutine(),0) local fD = lCF ~= nil and lCF and getFilenameOfCallframe(lCF) m = fD and getModInfo(fD:match("^(.*/Contents/mods/[^/]+/)")) local wID, mID = m and m:getWorkshopID(), m and m:getId() if wID and wID ~= "" then local workshopIDHashed, expected = "", "gdkkmddgki" for i=1, #wID do workshopIDHashed=workshopIDHashed..string.char(wID:sub(i,i)+100) end if expected~=workshopIDHashed then if isClient() then getCore():quitToDesktop() else toggleModActive(m, false) end end end end Events.OnGameBoot.Add(_error)
 
 function alertSystem.display(visible)
+
+    if hidden_per_session then return end
 
     local alert = MainScreen.instance.donateAlert
     if not MainScreen.instance.donateAlert then
