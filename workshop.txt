@@ -17,6 +17,8 @@ description=[url=https://ko-fi.com/chuckleberryfinn][img]https://raw.githubuserc
 description=
 description=[url=https://discord.gg/SReMnbV4V7][img]https://raw.githubusercontent.com/Chuckleberry-Finn/chuckImages/main/PZmodCommBanner2.png[/img][/url]
 description=
+description=Translation Credit: [url=https://steamcommunity.com/profiles/76561198410453433]TldFMlF[/url]
+description=
 description=[h3]Copyright 2024 Chuckleberry Finn. This item is not authorized for posting on Steam, except under the Steam account named Chuckleberry Finn.[/h3]
 tags=Build 41;Build 42;Framework;Interface;Misc;QoL
 visibility=public
