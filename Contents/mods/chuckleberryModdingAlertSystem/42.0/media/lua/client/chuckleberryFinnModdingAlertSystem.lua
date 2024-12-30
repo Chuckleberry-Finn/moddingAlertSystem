@@ -131,6 +131,7 @@ function alertSystem:onClickAlert()
 
     if self.collapsed then
         self.collapsed = false
+        self:dropApply(true)
         self:collapseApply()
     end
 
