@@ -17,7 +17,7 @@ function changelog_handler.scanMods()
         reader:close()
 
         for _, line in ipairs(lines) do
-            local key, value = string.match(line, "([a-zA-Z0-9_-]+)%s*=%s*(.+)")
+            local key, value = string.match(line, "(.+) = (.+)")
             if key and value then
                 changelog_handler.scannedMods[key] = value
             end
