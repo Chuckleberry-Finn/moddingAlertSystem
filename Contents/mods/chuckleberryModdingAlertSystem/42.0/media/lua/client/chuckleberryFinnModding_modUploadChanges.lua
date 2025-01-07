@@ -5,8 +5,6 @@ local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 local function WorkshopSubmitScreen_generateChangelog(workshopItem)
     if not workshopItem or workshopItem:getChangeNote() ~= "" then return end
 
-
-
     local desc = workshopItem:getSubmitDescription()
     local mod_ids = {}
 

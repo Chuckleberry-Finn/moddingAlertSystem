@@ -1,5 +1,5 @@
 require "ISUI/ISPanelJoypad"
----@class alertSystem : ISPanelJoypad
+
 local alertSystem = ISPanelJoypad:derive("alertSystem")
 
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
@@ -9,6 +9,7 @@ function alertSystem.addTexture(path) table.insert(alertSystem.spiffoTextures, p
 
 alertSystem.alertSelected = 0
 alertSystem.alertsLoaded = {}
+alertSystem.alertsLayout = {}
 alertSystem.alertsOld = 0
 alertSystem.rateTexture = getTexture("media/textures/alert/rate.png")
 alertSystem.expandTexture = getTexture("media/textures/alert/expand.png")
@@ -19,6 +20,26 @@ alertSystem.alertTextureEmpty = getTexture("media/textures/alert/alertEmpty.png"
 alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
 
 local hidden_per_session = false
+
+
+function alertSystem.determineLayout(modID, header, alertTitle, alertContents, icon)
+    if not alertSystem.alertsLayout[modID] then
+
+        local alertLayout = {}
+
+        alertLayout.headerH = getTextManager():MeasureStringY(UIFont.NewMedium, header)
+        alertLayout.titleH = getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle)
+        alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertContents) + (alertSystem.padding*1.5)
+        alertLayout.totalH = alertLayout.headerH + alertLayout.titleH + alertLayout.contentsH
+        alertLayout.headerY = alertLayout.totalH - (alertLayout.headerH/5)
+        alertLayout.headerW = getTextManager():MeasureStringX(UIFont.NewMedium, header) + (alertSystem.padding)
+        alertLayout.alertIcon = getTexture(icon)
+
+        alertSystem.alertsLayout[modID] = alertLayout
+    end
+
+    return alertSystem.alertsLayout[modID]
+end
 
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
@@ -45,28 +66,22 @@ function alertSystem:prerender()
         local latestAlert = alertModData.alerts[#alertModData.alerts]
         local alertTitle = latestAlert.title
         local alertContents = latestAlert.contents
+        local alertIcon = alertModData.icon
 
         local header = modName
         local subHeader = " ("..alertModID..")"
 
-        local headerH = getTextManager():MeasureStringY(UIFont.NewMedium, header)
-        local titleH = getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle)
+        local layout = self.determineLayout(alertModID, header, alertTitle, alertContents, alertIcon)
 
-        local contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertContents) + (alertSystem.padding/4)
+        self:drawRect(0, 0-layout.totalH, self.width, layout.totalH, 0.8, 0, 0, 0)
+        self:drawTexture(layout.alertIcon, 4, 0-layout.totalH, 1, 1, 1, 1)
+        self:drawText(header, 40+(alertSystem.padding/3), 0-layout.headerY, 1, 1, 1, 0.8, UIFont.NewMedium)
+        self:drawText(subHeader, 40+layout.headerW, 0-layout.totalH+(layout.headerH/3), 1, 1, 1, 0.5, UIFont.NewSmall)
 
-        local totalH = headerH + titleH + contentsH
-        local headerY = totalH - (headerH/5)
-        local headerW = getTextManager():MeasureStringX(UIFont.NewMedium, header) + (alertSystem.padding)
+        self:drawText(alertTitle, 40+(alertSystem.padding/3), 0-layout.headerY+layout.headerH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.NewSmall)
+        self:drawText(alertContents, 40+(alertSystem.padding/3), 0-layout.headerY+layout.titleH+(alertSystem.padding), 1, 1, 1, 0.8, UIFont.NewSmall)
 
-        self:drawRect(0, 0-totalH, self.width, totalH, 0.8, 0, 0, 0)
-        self:drawTexture(getTexture(alertModData.icon), 4, 0-totalH, 1, 1, 1, 1)
-        self:drawText(header, 40+(alertSystem.padding/3), 0-headerY, 1, 1, 1, 0.8, UIFont.NewMedium)
-        self:drawText(subHeader, 40+headerW, 0-totalH+(headerH/3), 1, 1, 1, 0.5, UIFont.NewSmall)
-
-        self:drawText(alertTitle, 40+(alertSystem.padding/3), 0-headerY+headerH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.NewSmall)
-        self:drawText(alertContents, 40+(alertSystem.padding/3), 0-headerY+titleH+(alertSystem.padding), 1, 1, 1, 0.8, UIFont.NewSmall)
-
-        self:drawRectBorder(0, 0-totalH, self.width, totalH, 0.8, 1, 1, 1)
+        self:drawRectBorder(0, 0-layout.totalH, self.width, layout.totalH, 0.8, 1, 1, 1)
     end
 end
 
