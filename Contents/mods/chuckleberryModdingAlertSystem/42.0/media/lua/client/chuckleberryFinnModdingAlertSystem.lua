@@ -37,11 +37,36 @@ function alertSystem:prerender()
     self:drawRectBorder(0, 0, collapseWidth, self.height, 0.8, 1, 1, 1)
 
     if not self.collapsed and self.alertSelected > 0 then
-        local alertText = self.alertsLoaded[self.alertSelected]
-        local alertH = getTextManager():MeasureStringY(UIFont.AutoNormSmall, alertText) + (alertSystem.padding)
-        self:drawRect(0, 0-alertH, self.width, alertH, 0.8, 0, 0, 0)
-        self:drawText(self.alertsLoaded[self.alertSelected], alertSystem.padding/3, 0-alertH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.AutoNormSmall)
-        self:drawRectBorder(0, 0-alertH, self.width, alertH, 0.8, 1, 1, 1)
+        local alertModID = self.alertsLoaded[self.alertSelected]
+
+        local alertModData = self.latestAlerts[alertModID]
+        local modName = alertModData.modName
+
+        local latestAlert = alertModData.alerts[#alertModData.alerts]
+        local alertTitle = latestAlert.title
+        local alertContents = latestAlert.contents
+
+        local header = modName
+        local subHeader = " ("..alertModID..")"
+
+        local headerH = getTextManager():MeasureStringY(UIFont.NewMedium, header)
+        local titleH = getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle)
+
+        local contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertContents) + (alertSystem.padding/4)
+
+        local totalH = headerH + titleH + contentsH
+        local headerY = totalH - (headerH/5)
+        local headerW = getTextManager():MeasureStringX(UIFont.NewMedium, header) + (alertSystem.padding)
+
+        self:drawRect(0, 0-totalH, self.width, totalH, 0.8, 0, 0, 0)
+        self:drawTexture(getTexture(alertModData.icon), 4, 0-totalH, 1, 1, 1, 1)
+        self:drawText(header, 40+(alertSystem.padding/3), 0-headerY, 1, 1, 1, 0.8, UIFont.NewMedium)
+        self:drawText(subHeader, 40+headerW, 0-totalH+(headerH/3), 1, 1, 1, 0.5, UIFont.NewSmall)
+
+        self:drawText(alertTitle, 40+(alertSystem.padding/3), 0-headerY+headerH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.NewSmall)
+        self:drawText(alertContents, 40+(alertSystem.padding/3), 0-headerY+titleH+(alertSystem.padding), 1, 1, 1, 0.8, UIFont.NewSmall)
+
+        self:drawRectBorder(0, 0-totalH, self.width, totalH, 0.8, 1, 1, 1)
     end
 end
 
@@ -153,23 +178,21 @@ function alertSystem:hideAlert(x, y)
 end
 
 
-function alertSystem:receiveAlert(alertMessage, old)
-    table.insert(self.alertsLoaded, alertMessage)
-    if old then alertSystem.alertsOld = alertSystem.alertsOld+1 end
-end
-
-
 function alertSystem:initialise()
     ISPanelJoypad.initialise(self)
 
-    local latestAlerts = changelog_handler.fetchAllModsLatest()
-    ---latest[modID] = {modName = modName, alerts = alerts, alreadyStored = true}
+    self.latestAlerts = changelog_handler.fetchAllModsLatest()
+    ---latest[modID] = {modName = modName, alerts = alerts, icon = modIcon, alreadyStored = true}
     ------alerts = {title = title, contents = contents}
-    if latestAlerts then
-        for modID,data in pairs(latestAlerts) do
-            local latest = data.alerts[#data.alerts]
-            local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
-            self:receiveAlert(msg, data.alreadyStored)
+    ---
+    ---local latest = data.alerts[#data.alerts]
+    ---local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
+
+    ---for modID,data in pairs(self.latestAlerts) do
+    if self.latestAlerts then
+        for modID,data in pairs(self.latestAlerts) do
+            table.insert(self.alertsLoaded, modID)
+            if data.alreadyStored then alertSystem.alertsOld = alertSystem.alertsOld+1 end
         end
     end
 
