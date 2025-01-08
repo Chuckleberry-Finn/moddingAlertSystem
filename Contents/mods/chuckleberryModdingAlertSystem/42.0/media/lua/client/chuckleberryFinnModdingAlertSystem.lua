@@ -1,5 +1,5 @@
 require "ISUI/ISPanelJoypad"
-
+---@type ISPanelJoypad|ISUIElement
 local alertSystem = ISPanelJoypad:derive("alertSystem")
 
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
@@ -20,8 +20,6 @@ alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
 
 alertSystem.alertLeft = getTexture("media/textures/alert/left.png")
 alertSystem.alertRight = getTexture("media/textures/alert/right.png")
-alertSystem.alertDotFull = getTexture("media/textures/alert/alertDotFull.png")
-alertSystem.alertDot = getTexture("media/textures/alert/alertDot.png")
 
 local hidden_per_session = false
 
@@ -83,8 +81,14 @@ function alertSystem:onMouseDown(x, y)
     if y <= 32 then
 
         local click = false
-        if (x >= 24 and x <= 32+24) then click = -1 end
-        if (x >= self.width-36) then click = 1 end
+
+        local offset = 8
+        local span = self.width/3
+        local leftX = (self.width/2)-(span/2)
+        local rightX = (self.width/2)+(span/2)+offset
+
+        if (x >= self.alertLeftX+8 and x <= self.alertLeftX+24) then click = -1 end
+        if (x >= self.alertRightX+8 and x <= self.alertRightX+24) then click = 1 end
 
         if click then
             self.alertSelected = self.alertSelected+click
@@ -99,22 +103,28 @@ end
 
 function alertSystem:render()
     ISPanelJoypad.render(self)
-    if alertSystem.spiffoTexture and (not self.collapsed) then
-        local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
-        self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
-    end
 
-    local offset = 16
-    local span = offset * #self.alertsLoaded
+    if not self.collapsed then
+        if alertSystem.spiffoTexture and (not self.collapsed) then
+            local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
+            self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
+        end
 
-    self:drawTexture(alertSystem.alertLeft, (self.width/2)-(span/2), 0, 1, 1, 1, 1)
-    self:drawTexture(alertSystem.alertRight, (self.width/2)+(span/2)+offset, 0, 1, 1, 1, 1)
+        if #alertSystem.alertsLoaded > 0 then
+            local label = tostring(self.alertSelected).."/"..tostring(#alertSystem.alertsLoaded)
+            self:drawText(label, 40, 7, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
+        end
 
-    local alertModID = self.alertsLoaded[self.alertSelected]
+        self:drawTexture(alertSystem.alertLeft, self.alertLeftX, 0, 0.7, 1, 1, 1)
+        self:drawTexture(alertSystem.alertRight, self.alertRightX, 0, 0.7, 1, 1, 1)
 
-    for i,modID in pairs(self.alertsLoaded) do
-        local icon = alertModID==modID and alertSystem.alertDotFull or alertSystem.alertDot
-        self:drawTexture(icon, (self.width/2)-(span/2) + (offset * i), 0, 1, 1, 1, 1)
+        local alertBarX = (self.alertLeftX+32)
+
+        local rectWidth = self.alertBarSpan-32
+        self:drawRectBorder(alertBarX, 10, rectWidth, 12, 0.7, 1, 1, 1)
+
+        local selectedAlertWidth = math.max(2, rectWidth/#self.alertsLoaded)
+        self:drawRect(alertBarX+(selectedAlertWidth*(self.alertSelected-1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
     end
 end
 
@@ -192,6 +202,17 @@ function alertSystem:initialise()
         end
     end
 
+    --[[
+    for i=0, 20, 1 do
+        table.insert(self.alertsLoaded, "TEST "..i)
+        self.latestAlerts["TEST "..i] = {
+            modName = "TEST "..i,
+            alerts = {{title = "testing title", contents = "testing contents"}},
+            icon = nil,
+        }
+    end
+    --]]
+
     ---Message here
     self.latestAlerts[""] = {
         modName = getText("IGUI_ChuckAlertHeaderMsg"),
@@ -235,6 +256,10 @@ function alertSystem:initialise()
         self["linkButton"..i] = button
         self:addChild(button)
     end
+
+    self.alertBarSpan = self.width*0.65
+    self.alertLeftX = (self.width/2)-(self.alertBarSpan/2)
+    self.alertRightX = (self.width/2)+(self.alertBarSpan/2)
 
     --alertSystem.rateTexture
     --rate button
