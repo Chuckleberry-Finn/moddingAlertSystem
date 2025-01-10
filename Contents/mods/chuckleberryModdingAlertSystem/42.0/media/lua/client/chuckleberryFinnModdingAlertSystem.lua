@@ -24,18 +24,28 @@ alertSystem.alertRight = getTexture("media/textures/alert/right.png")
 local hidden_per_session = false
 
 
-function alertSystem.determineLayout(modID, header, alertTitle, alertContents, icon)
+function alertSystem:determineLayout(modID, header, subHeader, alertTitle, alertContents, icon)
     if not alertSystem.alertsLayout[modID] then
 
         local alertLayout = {}
 
-        alertLayout.headerH = getTextManager():MeasureStringY(UIFont.NewMedium, header)
+        alertLayout.subHeaderW = getTextManager():MeasureStringX(UIFont.NewSmall, subHeader) + (alertSystem.padding)
+
+        alertLayout.headerX = 40+(alertSystem.padding/2)
+        alertLayout.header = getTextManager():WrapText(UIFont.NewMedium, header, (self.width-alertLayout.subHeaderW-alertLayout.headerX-alertSystem.padding))
+
+        alertLayout.headerH = getTextManager():MeasureStringY(UIFont.NewMedium, alertLayout.header)
+
         alertLayout.titleH = getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle)
-        alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertContents) + (alertSystem.padding*1.5)
-        alertLayout.totalH = alertLayout.headerH + alertLayout.titleH + alertLayout.contentsH
-        alertLayout.headerY = (alertLayout.headerH/2) + (alertSystem.padding)
-        alertLayout.headerW = getTextManager():MeasureStringX(UIFont.NewMedium, header) + (alertSystem.padding)
+        alertLayout.headerY = (alertSystem.padding*1.5)
+        alertLayout.headerW = getTextManager():MeasureStringX(UIFont.NewMedium, alertLayout.header) + (alertSystem.padding)
+
         alertLayout.alertIcon = getTexture(icon)
+
+        alertLayout.contents = getTextManager():WrapText(UIFont.NewSmall, alertContents, self.width-(alertSystem.padding*4))
+        alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertLayout.contents) + (alertSystem.padding*1.5)
+
+        alertLayout.totalH = alertLayout.headerH + alertLayout.titleH + alertLayout.contentsH
 
         alertSystem.alertsLayout[modID] = alertLayout
     end
@@ -59,15 +69,18 @@ function alertSystem:prerender()
         local alertIcon = alertModData.icon
         local header = modName
         local subHeader = alertModID == "" and "" or " ("..alertModID..")"
-        local layout = self.determineLayout(alertModID, header, alertTitle, alertContents, alertIcon)
+        local layout = self:determineLayout(alertModID, header, subHeader, alertTitle, alertContents, alertIcon)
 
         if layout.alertIcon then self:drawTexture(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 1, 1, 1, 1) end
 
-        local textOffset = 40+(alertSystem.padding/2)
-        self:drawText(header, textOffset, layout.headerY, 1, 1, 1, 0.96, UIFont.NewMedium)
-        self:drawText(subHeader, 44+layout.headerW, (layout.headerH/1.5) + (alertSystem.padding), 1, 1, 1, 0.7, UIFont.NewSmall)
-        self:drawText(alertTitle, textOffset, layout.headerY+layout.headerH+(alertSystem.padding/4), 1, 1, 1, 0.85, UIFont.NewSmall)
-        self:drawText(alertContents, textOffset, layout.headerY+layout.titleH+(alertSystem.padding), 1, 1, 1, 0.8, UIFont.NewSmall)
+        local maxSubheaderX = math.min( ((alertSystem.padding*1.5)+layout.headerW), (self.width-layout.subHeaderW) )
+        self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding/4), 1, 1, 1, 0.7, UIFont.NewSmall)
+
+        self:drawText(layout.header, layout.headerX, layout.headerY, 1, 1, 1, 0.96, UIFont.NewMedium)
+
+        self:drawText(alertTitle, layout.headerX, layout.headerY+layout.headerH+(alertSystem.padding/4), 1, 1, 1, 0.85, UIFont.NewSmall)
+
+        self:drawText(layout.contents, layout.headerX, layout.headerY+layout.headerH+layout.titleH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.NewSmall)
     end
 
     if #alertSystem.alertsLoaded > 0 then
