@@ -80,38 +80,13 @@ function alertSystem:prerender()
 
         self:drawText(alertTitle, layout.headerX, layout.headerY+layout.headerH+(alertSystem.padding/4), 1, 1, 1, 0.85, UIFont.NewSmall)
 
-        self:drawText(layout.contents, layout.headerX, layout.headerY+layout.headerH+layout.titleH+(alertSystem.padding/4), 1, 1, 1, 0.8, UIFont.NewSmall)
+        self.alertContentPanel.layout = layout
     end
 
     if #alertSystem.alertsLoaded > 0 then
         local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
         self:drawTexture(alertImage, 0, 0, 1, 1, 1, 1)
     end
-end
-
-function alertSystem:onMouseDown(x, y)
-
-    if y <= 32 then
-
-        local click = false
-
-        local offset = 8
-        local span = self.width/3
-        local leftX = (self.width/2)-(span/2)
-        local rightX = (self.width/2)+(span/2)+offset
-
-        if (x >= self.alertLeftX+8 and x <= self.alertLeftX+24) then click = -1 end
-        if (x >= self.alertRightX+8 and x <= self.alertRightX+24) then click = 1 end
-
-        if click then
-            self.alertSelected = self.alertSelected+click
-            if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
-            if self.alertSelected <= 0 then self.alertSelected = #self.alertsLoaded end
-            getSoundManager():playUISound("UIActivateButton")
-        end
-    end
-
-    ISPanelJoypad.onMouseDown(self, x, y)
 end
 
 function alertSystem:render()
@@ -138,7 +113,33 @@ function alertSystem:render()
 
         local selectedAlertWidth = math.max(2, rectWidth/#self.alertsLoaded)
         self:drawRect(alertBarX+(selectedAlertWidth*(self.alertSelected-1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
+
+        local layout = self.alertContentPanel.layout
+        self.alertContentPanel.contents = layout.contents
+        --self.alertContentPanel:setHeight(math.max(self.alertContentPanel.originalH, layout.contentsH))
+        self.alertContentPanel:drawText(layout.contents, self.padding/2, self.padding/2, 1, 1, 1, 0.8, UIFont.NewSmall)
     end
+end
+
+
+function alertSystem:onMouseDown(x, y)
+
+    if y <= 32 then
+
+        local click = false
+
+        if (x >= self.alertLeftX+8 and x <= self.alertLeftX+24) then click = -1 end
+        if (x >= self.alertRightX+8 and x <= self.alertRightX+24) then click = 1 end
+
+        if click then
+            self.alertSelected = self.alertSelected+click
+            if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
+            if self.alertSelected <= 0 then self.alertSelected = #self.alertsLoaded end
+            getSoundManager():playUISound("UIActivateButton")
+        end
+    end
+
+    ISPanelJoypad.onMouseDown(self, x, y)
 end
 
 
@@ -253,6 +254,15 @@ function alertSystem:initialise()
     self.collapseLabel:initialise()
     self.collapseLabel:instantiate()
     self:addChild(self.collapseLabel)
+
+    self.alertContentPanel = ISPanel:new(self.padding, self.padding*3.5, self.width-self.padding*2, self.height-self.padding*5)
+    --setText
+    self.alertContentPanel.originalH = self.alertContentPanel.height
+    self.alertContentPanel:addScrollBars()
+    self.alertContentPanel:setScrollHeight(self.alertContentPanel.height)
+    self.alertContentPanel:initialise()
+    self.alertContentPanel:instantiate()
+    self:addChild(self.alertContentPanel)
 
     local buttonSpan = self.width-(self.padding*5)-self.collapseLabel.width-self.collapseLabel.x
     local btnWid = (buttonSpan/4)-(self.padding/6)
