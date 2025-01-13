@@ -30,3 +30,9 @@ New and working alert system.
 [ 12/30/24 ]
 - Fixed issue with un-collapsing sometimes not respecting the dropMessage's status.
 [ ------ ]
+
+[ Remaster for B42 ]
+- Remastered the UI to be more streamlined based on feedback.
+- No longer includes a separate alert system and drop message.
+- Fixed new alerts warning.
+[ ------ ]
