@@ -23,27 +23,33 @@ alertSystem.alertRight = getTexture("media/textures/alert/right.png")
 
 local hidden_per_session = false
 
+function alertSystem:onMouseWheel(del)
+    if self.alertContentPanel:isMouseOver() then
+        self.alertContentPanel:setYScroll(self.alertContentPanel:getYScroll() - (del*9))
+        return true
+    end
+end
 
 function alertSystem:determineLayout(modID, header, subHeader, alertTitle, alertContents, icon)
     if not alertSystem.alertsLayout[modID] then
 
         local alertLayout = {}
 
-        alertLayout.subHeaderW = getTextManager():MeasureStringX(UIFont.NewSmall, subHeader) + (alertSystem.padding)
+        alertLayout.subHeaderW = subHeader and getTextManager():MeasureStringX(UIFont.NewSmall, subHeader) + (alertSystem.padding) or 0
 
         alertLayout.headerX = 40+(alertSystem.padding/2)
         alertLayout.header = getTextManager():WrapText(UIFont.NewMedium, header, (self.width-alertLayout.subHeaderW-alertLayout.headerX-alertSystem.padding))
 
         alertLayout.headerH = getTextManager():MeasureStringY(UIFont.NewMedium, alertLayout.header)
 
-        alertLayout.titleH = getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle)
+        alertLayout.titleH = alertTitle and getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle) or 0
         alertLayout.headerY = (alertSystem.padding*1.5)
         alertLayout.headerW = getTextManager():MeasureStringX(UIFont.NewMedium, alertLayout.header) + (alertSystem.padding)
 
         alertLayout.alertIcon = getTexture(icon)
 
         alertLayout.contents = getTextManager():WrapText(UIFont.NewSmall, alertContents, self.width-(alertSystem.padding*4))
-        alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertLayout.contents) + (alertSystem.padding*1.5)
+        alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertLayout.contents) + (alertSystem.padding*1)
 
         alertLayout.totalH = alertLayout.headerH + alertLayout.titleH + alertLayout.contentsH
 
@@ -55,6 +61,7 @@ end
 
 function alertSystem:prerender()
     ISPanelJoypad.prerender(self)
+
     local collapseWidth = not self.collapsed and self.width or self.collapse.width+10
     self:drawRect(0, 0, collapseWidth, self.height, 0.8, 0, 0, 0)
     self:drawRectBorder(0, 0, collapseWidth, self.height, 0.8, 1, 1, 1)
@@ -64,35 +71,42 @@ function alertSystem:prerender()
         local alertModData = self.latestAlerts[alertModID]
         local modName = alertModData.modName
         local latestAlert = alertModData.alerts[#alertModData.alerts]
-        local alertTitle = latestAlert.title
+        local alertTitle = latestAlert.title ~= "" and latestAlert.title
         local alertContents = latestAlert.contents
         local alertIcon = alertModData.icon
         local header = modName
-        local subHeader = alertModID == "" and "" or " ("..alertModID..")"
+        local subHeader = alertModID ~= "" and " ("..alertModID..")"
         local layout = self:determineLayout(alertModID, header, subHeader, alertTitle, alertContents, alertIcon)
 
         if layout.alertIcon then self:drawTexture(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 1, 1, 1, 1) end
 
         local maxSubheaderX = math.min( ((alertSystem.padding*1.5)+layout.headerW), (self.width-layout.subHeaderW) )
-        self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding/4), 1, 1, 1, 0.7, UIFont.NewSmall)
+        if subHeader then
+            self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding/5), 1, 1, 1, 0.7, UIFont.NewSmall)
+        end
 
         self:drawText(layout.header, layout.headerX, layout.headerY, 1, 1, 1, 0.96, UIFont.NewMedium)
 
-        self:drawText(alertTitle, layout.headerX, layout.headerY+layout.headerH+(alertSystem.padding/4), 1, 1, 1, 0.85, UIFont.NewSmall)
+        local titleY = layout.headerY+layout.headerH+(alertSystem.padding/7)
+        if alertTitle then
+            self:drawText(alertTitle, layout.headerX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
+        end
 
-        self.alertContentPanel.layout = layout
-    end
+        self.alertContentPanel:setY((titleY+layout.titleH+(alertSystem.padding/7)))
+        self.alertContentPanel:setHeight(self.alertContentPanel.originalH+(self.alertContentPanel.originalY-self.alertContentPanel:getY()))
 
-    if #alertSystem.alertsLoaded > 0 then
-        local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
-        self:drawTexture(alertImage, 0, 0, 1, 1, 1, 1)
+        self.alertContentPanel:clampStencilRectToParent(0, 0, self.alertContentPanel:getWidth(), self.alertContentPanel:getHeight())
+        self.alertContentPanel:setScrollHeight(layout.contentsH)
+        self.alertContentPanel:drawText(layout.contents, self.padding/3, self.padding/3, 1, 1, 1, 0.8, UIFont.NewSmall)
+        self.alertContentPanel:clearStencilRect()
     end
 end
 
+
 function alertSystem:render()
-    ISPanelJoypad.render(self)
 
     if not self.collapsed then
+
         if alertSystem.spiffoTexture and (not self.collapsed) then
             local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
             self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
@@ -114,11 +128,15 @@ function alertSystem:render()
         local selectedAlertWidth = math.max(2, rectWidth/#self.alertsLoaded)
         self:drawRect(alertBarX+(selectedAlertWidth*(self.alertSelected-1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
 
-        local layout = self.alertContentPanel.layout
-        self.alertContentPanel.contents = layout.contents
-        --self.alertContentPanel:setHeight(math.max(self.alertContentPanel.originalH, layout.contentsH))
-        self.alertContentPanel:drawText(layout.contents, self.padding/2, self.padding/2, 1, 1, 1, 0.8, UIFont.NewSmall)
     end
+
+    ISPanelJoypad.render(self)
+
+    if #alertSystem.alertsLoaded > 0 then
+        local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+        self:drawTexture(alertImage, 0, 0, 1, 1, 1, 1)
+    end
+
 end
 
 
@@ -230,12 +248,22 @@ function alertSystem:initialise()
     ---Message here
     self.latestAlerts[""] = {
         modName = getText("IGUI_ChuckAlertHeaderMsg"),
-        alerts = {{title = " ", contents = getText("IGUI_ChuckAlertDonationMsg")}},
+        alerts = {{title = "", contents = getText("IGUI_ChuckAlertDonationMsg")}},
         icon = nil,
     }
     alertSystem.alertsOld = alertSystem.alertsOld+1
 
     local btnHgt = alertSystem.btnHgt
+
+    self.alertContentPanel = ISPanelJoypad:new(self.padding, self.padding*3.5, self.width-self.padding*2, self.height-self.padding*5.3)
+    self.alertContentPanel.originalH = self.alertContentPanel.height
+    self.alertContentPanel.originalY = self.alertContentPanel.y
+    self.alertContentPanel.backgroundColor = {r=0, g=0, b=0, a=0}
+    self.alertContentPanel:initialise()
+    self.alertContentPanel:instantiate()
+    self.alertContentPanel:addScrollBars()
+    self:addChild(self.alertContentPanel)
+
 
     self.collapse = ISButton:new(0, self:getHeight()-48, 48, 48, "", self, alertSystem.onClickCollapse)
     self.collapse.originalY = self.collapse.y
@@ -254,15 +282,6 @@ function alertSystem:initialise()
     self.collapseLabel:initialise()
     self.collapseLabel:instantiate()
     self:addChild(self.collapseLabel)
-
-    self.alertContentPanel = ISPanel:new(self.padding, self.padding*3.5, self.width-self.padding*2, self.height-self.padding*5)
-    --setText
-    self.alertContentPanel.originalH = self.alertContentPanel.height
-    self.alertContentPanel:addScrollBars()
-    self.alertContentPanel:setScrollHeight(self.alertContentPanel.height)
-    self.alertContentPanel:initialise()
-    self.alertContentPanel:instantiate()
-    self:addChild(self.alertContentPanel)
 
     local buttonSpan = self.width-(self.padding*5)-self.collapseLabel.width-self.collapseLabel.x
     local btnWid = (buttonSpan/4)-(self.padding/6)
@@ -283,13 +302,6 @@ function alertSystem:initialise()
     self.alertBarSpan = self.width*0.65
     self.alertLeftX = (self.width/2)-(self.alertBarSpan/2)
     self.alertRightX = (self.width/2)+(self.alertBarSpan/2)
-
-    --alertSystem.rateTexture
-    --rate button
-    --self.rate.borderColor = {r=0.39, g=0.66, b=0.3, a=0.9}
-    --self.rate.backgroundColor = {r=0.07, g=0.13, b=0.19, a=1}
-
-
 end
 
 

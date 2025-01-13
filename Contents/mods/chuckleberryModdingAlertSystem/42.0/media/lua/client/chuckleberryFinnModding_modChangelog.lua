@@ -80,7 +80,7 @@ function changelog_handler.fetchMod(modID, latest)
     end
     reader:close()
 
-    local completeText = table.concat(lines, "\n")
+    local completeText = table.concat(lines, "")
 
     local alerts = {}
     local pattern = "%[ ([%d/]+.-)% ](.-)%[ ------ %]"
