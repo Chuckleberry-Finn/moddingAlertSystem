@@ -28,6 +28,16 @@ function alertSystem:onMouseWheel(del)
         self.alertContentPanel:setYScroll(self.alertContentPanel:getYScroll() - (del*9))
         return true
     end
+
+    local x = self:getMouseX()
+    local y = self:getMouseY()
+
+    if x >= self.alertLeftX and x <= self.alertLeftX+self.alertBarSpan and y >= 10 and y <= 10+12 then
+        self.alertSelected = self.alertSelected + (del>0 and 1 or -1)
+        if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
+        if self.alertSelected <= 0 then self.alertSelected = #self.alertsLoaded end
+        getSoundManager():playUISound("UIActivateButton")
+    end
 end
 
 function alertSystem:determineLayout(modID, header, subHeader, alertTitle, alertContents, icon)
