@@ -104,6 +104,7 @@ end
 
 
 function alertSystem:render()
+    ISPanelJoypad.render(self)
 
     if not self.collapsed then
 
@@ -129,8 +130,6 @@ function alertSystem:render()
         self:drawRect(alertBarX+(selectedAlertWidth*(self.alertSelected-1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
 
     end
-
-    ISPanelJoypad.render(self)
 
     if #alertSystem.alertsLoaded > 0 then
         local alertImage = (#alertSystem.alertsLoaded-alertSystem.alertsOld)>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
@@ -173,6 +172,7 @@ function alertSystem:collapseApply()
     end
 
     self.collapseLabel:setVisible(not self.collapsed)
+    self.alertContentPanel:setVisible(not self.collapsed)
 
     if self.collapseTexture and self.expandTexture then
         self.collapse:setImage(self.collapsed and self.expandTexture or self.collapseTexture)
@@ -349,9 +349,9 @@ function alertSystem.display(visible)
 
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
-
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - 110 - alertSystem.padding
+        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110
+        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding*0.5)
 
         alert = alertSystem:new(x, y, windowW, windowH)
         alert:initialise()
