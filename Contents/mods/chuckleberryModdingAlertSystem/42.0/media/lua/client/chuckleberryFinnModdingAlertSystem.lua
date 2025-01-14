@@ -350,7 +350,7 @@ function alertSystem.display(visible)
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110
+        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
         local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding*0.5)
 
         alert = alertSystem:new(x, y, windowW, windowH)
