@@ -2,6 +2,7 @@ local changelog_handler = {}
 
 changelog_handler.scannedMods = nil--{}
 changelog_handler.freshAlerts = nil--{}
+changelog_handler.modAlertConfig = nil--{}
 
 function changelog_handler.scanMods()
 
@@ -85,8 +86,15 @@ function changelog_handler.fetchMod(modID, latest)
     local alerts = {}
     local pattern = "%[ ([%d/]+.-)% ](.-)%[ ------ %]"
 
+    ---ALERT_CONFIG
+
     for title, contents in string.gmatch(completeText, pattern) do
-        table.insert(alerts, {title = title, contents = contents})
+        if title == "ALERT_CONFIG" then
+            changelog_handler.modAlertConfig = changelog_handler.modAlertConfig or {}
+            changelog_handler.modAlertConfig[modID] = contents
+        else
+            table.insert(alerts, {title = title, contents = contents})
+        end
     end
 
     if latest then

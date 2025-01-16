@@ -1,3 +1,9 @@
+[ ALERT_CONFIG ]
+link1 = https://ko-fi.com/chuckleberryfinn,
+link2 = https://steamcommunity.com/id/Chuckleberry_Finn/myworkshopfiles/?appid=108600,
+link3 = https://www.youtube.com/@chu_uck,
+[ ------ ]
+
 [ 11/22/24 ]
 New and working alert system.
 - Saves collapse of system and message.
