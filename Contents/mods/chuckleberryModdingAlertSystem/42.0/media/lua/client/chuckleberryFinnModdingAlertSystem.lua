@@ -149,6 +149,21 @@ function alertSystem:render()
 end
 
 
+function alertSystem:updateButtons()
+    local alertModID = self.alertsLoaded[self.alertSelected]
+    local modAlertConfig = changelog_handler.fetchModAlertConfig(alertModID)
+    for i=1, 4 do
+        local button = self["linkButton"..i]
+        if modAlertConfig then
+            local buttonData = modAlertConfig["link"..i]
+            button.url = buttonData.url
+            button:setTitle(buttonData.title)
+        end
+        button:setVisible((modAlertConfig~=nil) and (not self.collapsed))
+    end
+end
+
+
 function alertSystem:onMouseDown(x, y)
 
     if y <= 32 then
@@ -163,6 +178,7 @@ function alertSystem:onMouseDown(x, y)
             if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
             if self.alertSelected <= 0 then self.alertSelected = #self.alertsLoaded end
             getSoundManager():playUISound("UIActivateButton")
+            self:updateButtons()
         end
     end
 
@@ -171,18 +187,16 @@ end
 
 
 function alertSystem:onClickLinkButton(button)
+    print("button.url: |"..button.url.."|")
     openUrl(button.url)
 end
 
 
 function alertSystem:collapseApply()
 
-    for i=1, 4 do
-        self["linkButton"..i]:setVisible(not self.collapsed)
-    end
-
     self.collapseLabel:setVisible(not self.collapsed)
     self.alertContentPanel:setVisible(not self.collapsed)
+    self:updateButtons()
 
     if self.collapseTexture and self.expandTexture then
         self.collapse:setImage(self.collapsed and self.expandTexture or self.collapseTexture)
@@ -305,6 +319,7 @@ function alertSystem:initialise()
         button.textColor = {r=0.64, g=0.8, b=0.02, a=1}
         button:initialise()
         button:instantiate()
+        button:setVisible(false)
         self["linkButton"..i] = button
         self:addChild(button)
     end

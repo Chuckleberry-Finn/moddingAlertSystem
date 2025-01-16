@@ -2,7 +2,24 @@ local changelog_handler = {}
 
 changelog_handler.scannedMods = nil--{}
 changelog_handler.freshAlerts = nil--{}
-changelog_handler.modAlertConfig = nil--{}
+changelog_handler.modAlertConfig = {}
+
+
+function changelog_handler.fetchModAlertConfig(modID)
+    return changelog_handler.modAlertConfig[modID]
+end
+
+
+function changelog_handler.parseModAlertConfig(modID, configText)
+
+    local configTable = {}
+    for key, title, url in configText:gmatch("(%w+)%s*=%s*([^=]+)%s*=%s*([^,]+),?") do
+        configTable[key] = { title = title:match("^%s*(.-)%s*$"), url = url:match("^%s*(.-)%s*$") }
+    end
+
+    changelog_handler.modAlertConfig[modID] = configTable
+end
+
 
 function changelog_handler.scanMods()
 
@@ -25,7 +42,6 @@ function changelog_handler.scanMods()
         end
     end
 end
-
 
 
 function changelog_handler.fetchAllModsLatest()
@@ -84,14 +100,13 @@ function changelog_handler.fetchMod(modID, latest)
     local completeText = table.concat(lines, "")
 
     local alerts = {}
-    local pattern = "%[ ([%d/]+.-)% ](.-)%[ ------ %]"
+    local pattern = "%[ ([^%]]+)% ](.-)%[ ------ %]"
 
     ---ALERT_CONFIG
 
     for title, contents in string.gmatch(completeText, pattern) do
         if title == "ALERT_CONFIG" then
-            changelog_handler.modAlertConfig = changelog_handler.modAlertConfig or {}
-            changelog_handler.modAlertConfig[modID] = contents
+            changelog_handler.parseModAlertConfig(modID, contents)
         else
             table.insert(alerts, {title = title, contents = contents})
         end
