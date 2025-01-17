@@ -157,6 +157,8 @@ function alertSystem:updateButtons()
         if modAlertConfig then
             local buttonData = modAlertConfig["link"..i]
             button.url = buttonData.url
+            button.borderColor = buttonData.color
+            button.textColor = buttonData.color
             button:setTitle(buttonData.title)
         end
         button:setVisible((modAlertConfig~=nil) and (not self.collapsed))

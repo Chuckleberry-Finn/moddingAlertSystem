@@ -4,6 +4,17 @@ changelog_handler.scannedMods = nil--{}
 changelog_handler.freshAlerts = nil--{}
 changelog_handler.modAlertConfig = {}
 
+changelog_handler.defaultButtonColor = {r=0.64, g=0.8, b=0.02, a=0.95}
+changelog_handler.buttonColors = {
+    ["https://steamcommunity.com/"] = {r=0.4, g=0.753, b=0.957, a=0.95},
+    ["https://ko%-fi.com/"] = {r=0.447, g=0.647, b=0.949, a=0.95},
+    ["https://twitch.com/"] = {r=0.392, g=0.255, b=0.647, a=0.95},
+    ["https://discord.gg/"] = {r=0.345, g=0.396, b=0.949, a=0.95},
+    ["https://youtube.com/"] = {r=0.95, g=0.0, b=0.0, a=0.95},
+    ["https://github.com/"] = {r=0.510, g=0.314, b=0.875, a=0.95},
+    ["https://patreon.com/"] = {r=0.976, g=0.408, b=0.329, a=0.95},
+    ["https://onlyfans.com/"] = {r=0.0, g=0.686, b=0.941, a=0.95},
+}
 
 function changelog_handler.fetchModAlertConfig(modID)
     return changelog_handler.modAlertConfig[modID]
@@ -13,8 +24,19 @@ end
 function changelog_handler.parseModAlertConfig(modID, configText)
 
     local configTable = {}
-    for key, title, url in configText:gmatch("(%w+)%s*=%s*([^=]+)%s*=%s*([^,]+),?") do
-        configTable[key] = { title = title:match("^%s*(.-)%s*$"), url = url:match("^%s*(.-)%s*$") }
+    for key, t, u in configText:gmatch("(%w+)%s*=%s*([^=]+)%s*=%s*([^,]+),?") do
+
+        local title = t:match("^%s*(.-)%s*$")
+        local url = u:match("^%s*(.-)%s*$")
+        local sanitizedUrl = string.gsub(url, "https://steamcommunity%.com/linkfilter/%?u=", "")
+        local color = changelog_handler.defaultButtonColor
+        for uu,rgb in pairs(changelog_handler.buttonColors) do
+            if string.find(sanitizedUrl, uu) then
+                color = rgb
+                break
+            end
+        end
+        configTable[key] = { title = title, url = url, color = color}
     end
 
     changelog_handler.modAlertConfig[modID] = configTable
