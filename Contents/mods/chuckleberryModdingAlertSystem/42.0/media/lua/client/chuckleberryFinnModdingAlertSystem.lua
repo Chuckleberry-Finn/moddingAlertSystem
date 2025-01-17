@@ -158,6 +158,7 @@ function alertSystem:updateButtons()
             local buttonData = modAlertConfig["link"..i]
             button.url = buttonData.url
             button.borderColor = buttonData.color
+            button:setImage(buttonData.icon)
             button.textColor = buttonData.color
             button:setTitle(buttonData.title)
         end

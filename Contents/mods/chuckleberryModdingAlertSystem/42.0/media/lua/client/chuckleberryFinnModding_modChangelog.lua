@@ -5,16 +5,53 @@ changelog_handler.freshAlerts = nil--{}
 changelog_handler.modAlertConfig = {}
 
 changelog_handler.defaultButtonColor = {r=0.64, g=0.8, b=0.02, a=0.95}
-changelog_handler.buttonColors = {
-    ["https://steamcommunity.com/"] = {r=0.4, g=0.753, b=0.957, a=0.95},
-    ["https://ko%-fi.com/"] = {r=0.447, g=0.647, b=0.949, a=0.95},
-    ["https://twitch.com/"] = {r=0.392, g=0.255, b=0.647, a=0.95},
-    ["https://discord.gg/"] = {r=0.345, g=0.396, b=0.949, a=0.95},
-    ["https://youtube.com/"] = {r=0.95, g=0.0, b=0.0, a=0.95},
-    ["https://github.com/"] = {r=0.510, g=0.314, b=0.875, a=0.95},
-    ["https://patreon.com/"] = {r=0.976, g=0.408, b=0.329, a=0.95},
-    ["https://onlyfans.com/"] = {r=0.0, g=0.686, b=0.941, a=0.95},
+changelog_handler.buttonData = {
+    ["https://steamcommunity.com/"] = {
+        color = { r = 0.4, g = 0.753, b = 0.957, a = 0.95 },
+        icon = getTexture("media/textures/alert/steam.png"),
+    },
+
+    ["https://ko%-fi.com/"] = {
+        color = { r = 0.447, g = 0.647, b = 0.949, a = 0.95 },
+        icon = getTexture("media/textures/alert/kofi.png"),
+    },
+
+    ["https://twitch.com/"] = {
+        color = { r = 0.392, g = 0.255, b = 0.647, a = 0.95 },
+        icon = getTexture("media/textures/alert/twitch.png"),
+    },
+
+    ["https://discord.gg/"] = {
+        color = { r = 0.345, g = 0.396, b = 0.949, a = 0.95 },
+        icon = getTexture("media/textures/alert/discord.png"),
+    },
+
+    ["https://youtube.com/"] = {
+        color = { r = 0.95, g = 0.0, b = 0.0, a = 0.95 },
+        icon = getTexture("media/textures/alert/youtube.png"),
+    },
+
+    ["https://github.com/"] = {
+        color = { r = 0.510, g = 0.314, b = 0.875, a = 0.95 },
+        icon = getTexture("media/textures/alert/github.png"),
+    },
+
+    ["https://patreon.com/"] = {
+        color = { r = 0.976, g = 0.408, b = 0.329, a = 0.95 },
+        icon = getTexture("media/textures/alert/patreon.png"),
+    },
+
+    ["https://theindiestone.com/"] = {
+        color = { r = 0.0, g = 0.686, b = 0.941, a = 0.95 },
+        icon = getTexture("media/textures/alert/theIndieStone.png"),
+    },
+
+    ["https://onlyfans.com/"] = {
+        color = { r = 0.0, g = 0.686, b = 0.941, a = 0.95 },
+        icon = getTexture("media/textures/alert/fans.png"),
+    },
 }
+
 
 function changelog_handler.fetchModAlertConfig(modID)
     return changelog_handler.modAlertConfig[modID]
@@ -30,13 +67,15 @@ function changelog_handler.parseModAlertConfig(modID, configText)
         local url = u:match("^%s*(.-)%s*$")
         local sanitizedUrl = string.gsub(url, "https://steamcommunity%.com/linkfilter/%?u=", "")
         local color = changelog_handler.defaultButtonColor
-        for uu,rgb in pairs(changelog_handler.buttonColors) do
+        local icon = nil
+        for uu,data in pairs(changelog_handler.buttonData) do
             if string.find(sanitizedUrl, uu) then
-                color = rgb
+                if data.color then color = data.color end
+                if data.icon then icon = data.icon end
                 break
             end
         end
-        configTable[key] = { title = title, url = url, color = color}
+        configTable[key] = { title = (icon and "" or title), url = url, color = color, icon = icon}
     end
 
     changelog_handler.modAlertConfig[modID] = configTable
