@@ -111,7 +111,7 @@ end
 
 function changelog_handler.fetchMod(modID, latest)
 
-    local reader = false--getModFileReader(modID, "ChangeLog.txt", false)
+    local reader = getModFileReader(modID, "ChangeLog.txt", false)
     local md = false
     if not reader then
         md = true
