@@ -165,10 +165,11 @@ function changelog_handler.fetchMod(modID, latest)
     local pattern = "%[ ([^%]]+)% ](.-)%[ ------ %]"
 
     for title, contents in string.gmatch(completeText, pattern) do
+        local cleaned_contents = contents:gsub("^%s*\n", "")
         if title == "ALERT_CONFIG" then
-            changelog_handler.parseModAlertConfig(modID, contents)
+            changelog_handler.parseModAlertConfig(modID, cleaned_contents)
         else
-            table.insert(alerts, {title = title, contents = contents})
+            table.insert(alerts, {title = title, contents = cleaned_contents})
         end
     end
 
