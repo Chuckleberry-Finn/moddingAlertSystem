@@ -1,1 +1,0 @@
-[See changelog](Contents/mods/chuckleberryModdingAlertSystem/common/ChangeLog.md)
