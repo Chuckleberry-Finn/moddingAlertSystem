@@ -1,1 +1,1 @@
-[View Repository Documentation](Contents/mods/chuckleberryModdingAlertSystem/common/ChangeLog.txt)
+[View Repository Documentation](Contents/mods/chuckleberryModdingAlertSystem/common/ChangeLog.md)
