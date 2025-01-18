@@ -46,20 +46,21 @@ function alertSystem:determineLayout(modID, header, subHeader, alertTitle, alert
         local alertLayout = {}
 
         alertLayout.subHeaderW = subHeader and getTextManager():MeasureStringX(UIFont.NewSmall, subHeader) + (alertSystem.padding) or 0
-
         alertLayout.headerX = 40+(alertSystem.padding/2)
-        alertLayout.header = getTextManager():WrapText(UIFont.NewMedium, header, (self.width-alertLayout.subHeaderW-alertLayout.headerX-alertSystem.padding))
 
-        alertLayout.headerH = getTextManager():MeasureStringY(UIFont.NewMedium, alertLayout.header)
+        local tM = getTextManager()
+        local headerMaxW = (self.width-alertLayout.subHeaderW-alertLayout.headerX-alertSystem.padding)
+        alertLayout.header = tM:WrapText(UIFont.NewMedium, header, headerMaxW, -1, "\n")
+        alertLayout.headerH = tM:MeasureStringY(UIFont.NewMedium, alertLayout.header)
 
         alertLayout.titleH = alertTitle and getTextManager():MeasureStringY(UIFont.NewSmall, alertTitle) or 0
         alertLayout.headerY = (alertSystem.padding*1.5)
-        alertLayout.headerW = getTextManager():MeasureStringX(UIFont.NewMedium, alertLayout.header) + (alertSystem.padding)
+        alertLayout.headerW = tM:MeasureStringX(UIFont.NewMedium, alertLayout.header) + (alertSystem.padding)
 
         alertLayout.alertIcon = icon
 
-        alertLayout.contents = getTextManager():WrapText(UIFont.NewSmall, alertContents, self.width-(alertSystem.padding*4))
-        alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertLayout.contents) + (alertSystem.padding*1)
+        alertLayout.contents = tM:WrapText(UIFont.NewSmall, alertContents, self.width-(alertSystem.padding*4))
+        alertLayout.contentsH = tM:MeasureStringY(UIFont.NewSmall, alertLayout.contents) + (alertSystem.padding*1)
 
         alertLayout.totalH = alertLayout.headerH + alertLayout.titleH + alertLayout.contentsH
 
