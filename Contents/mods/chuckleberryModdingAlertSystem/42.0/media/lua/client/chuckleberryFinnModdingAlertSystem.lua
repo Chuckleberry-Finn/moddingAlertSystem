@@ -56,7 +56,7 @@ function alertSystem:determineLayout(modID, header, subHeader, alertTitle, alert
         alertLayout.headerY = (alertSystem.padding*1.5)
         alertLayout.headerW = getTextManager():MeasureStringX(UIFont.NewMedium, alertLayout.header) + (alertSystem.padding)
 
-        alertLayout.alertIcon = getTexture(icon)
+        alertLayout.alertIcon = icon
 
         alertLayout.contents = getTextManager():WrapText(UIFont.NewSmall, alertContents, self.width-(alertSystem.padding*4))
         alertLayout.contentsH = getTextManager():MeasureStringY(UIFont.NewSmall, alertLayout.contents) + (alertSystem.padding*1)
@@ -153,16 +153,21 @@ function alertSystem:updateButtons()
     local alertModID = self.alertsLoaded[self.alertSelected]
     local modAlertConfig = changelog_handler.fetchModAlertConfig(alertModID)
     for i=1, 4 do
+        local visible = false
         local button = self["linkButton"..i]
         if modAlertConfig then
             local buttonData = modAlertConfig["link"..i]
-            button.url = buttonData.url
-            button.borderColor = buttonData.color
-            button:setImage(buttonData.icon)
-            button.textColor = buttonData.color
-            button:setTitle(buttonData.title)
+            if buttonData then
+                visible = true
+                button.url = buttonData.url
+                button.borderColor = buttonData.color
+                button.backgroundColor = {r=buttonData.color.r, g=buttonData.color.g, b=buttonData.color.b, a=0.06}
+                button:setImage(buttonData.icon)
+                button.textColor = buttonData.color
+                button:setTitle(buttonData.title)
+            end
         end
-        button:setVisible((modAlertConfig~=nil) and (not self.collapsed))
+        button:setVisible((visible) and (not self.collapsed))
     end
 end
 
@@ -177,6 +182,17 @@ function alertSystem:onMouseDown(x, y)
         if (x >= self.alertRightX+8 and x <= self.alertRightX+24) then click = 1 end
 
         if click then
+
+            ---mark current alert as read
+            local currentAlertModID = self.alertsLoaded[self.alertSelected]
+            if currentAlertModID then
+                local currentAlertOld = self.latestAlerts[currentAlertModID].alreadyStored
+                if (not currentAlertOld) then
+                    self.latestAlerts[currentAlertModID].alreadyStored = true
+                    alertSystem.alertsOld = alertSystem.alertsOld+1
+                end
+            end
+
             self.alertSelected = self.alertSelected+click
             if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
             if self.alertSelected <= 0 then self.alertSelected = #self.alertsLoaded end
@@ -189,10 +205,7 @@ function alertSystem:onMouseDown(x, y)
 end
 
 
-function alertSystem:onClickLinkButton(button)
-    print("button.url: |"..button.url.."|")
-    openUrl(button.url)
-end
+function alertSystem:onClickLinkButton(button) openUrl(button.url) end
 
 
 function alertSystem:collapseApply()
@@ -251,15 +264,26 @@ function alertSystem:initialise()
     ---local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
     ---for modID,data in pairs(self.latestAlerts) do
 
-    ---Load "" first.
+    ---Load "" first, used for the welcome message.
     table.insert(self.alertsLoaded, "")
+
+    local tmpTableOld = {}
 
     if self.latestAlerts then
         for modID,data in pairs(self.latestAlerts) do
-            table.insert(self.alertsLoaded, modID)
-            if data.alreadyStored then alertSystem.alertsOld = alertSystem.alertsOld+1 end
+            ---cache the loaded texture
+            if data.icon then data.icon = getTexture(data.icon) end
+
+            if data.alreadyStored then
+                alertSystem.alertsOld = alertSystem.alertsOld+1
+                table.insert(tmpTableOld, modID)
+            else
+                table.insert(self.alertsLoaded, modID)
+            end
         end
     end
+
+    for _,modID in pairs(tmpTableOld) do table.insert(self.alertsLoaded, modID) end
 
     --[[
     for i=0, 20, 1 do
@@ -279,6 +303,7 @@ function alertSystem:initialise()
         icon = nil,
     }
     alertSystem.alertsOld = alertSystem.alertsOld+1
+
 
     local btnHgt = alertSystem.btnHgt
 
