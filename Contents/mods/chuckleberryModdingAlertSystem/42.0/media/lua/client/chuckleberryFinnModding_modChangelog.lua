@@ -164,8 +164,6 @@ function changelog_handler.fetchMod(modID, latest)
     local alerts = {}
     local pattern = "%[ ([^%]]+)% ](.-)%[ ------ %]"
 
-    ---ALERT_CONFIG
-
     for title, contents in string.gmatch(completeText, pattern) do
         if title == "ALERT_CONFIG" then
             changelog_handler.parseModAlertConfig(modID, contents)
