@@ -49,5 +49,6 @@ The system has been remastered into a true API - so that any mod-author can make
 - As before only requires mod-author to include a ChangeLog.txt (Now expected in /common/ for B42+, as before /media/ for B41-)
 - Alerts support programmable buttons by the mod's respective author.
 - Well known sites are color-coded and override a provided title with a logo.
+- Sites that do not start with: `https://steamcommunity.com`, `https://projectzomboid.com`, `https://theindiestone.com`, require Steam's link filter: `https://steamcommunity.com/linkfilter/?u=`.
 See: ChangeLog.txt entry: ALERT_CONFIG for an example.
 [ ------ ]
