@@ -1,1 +1,1 @@
-[View Repository Documentation](Contents/mods/chuckleberryModdingAlertSystem/common/ChangeLog.md)
+[See changelog](Contents/mods/chuckleberryModdingAlertSystem/common/ChangeLog.md)
