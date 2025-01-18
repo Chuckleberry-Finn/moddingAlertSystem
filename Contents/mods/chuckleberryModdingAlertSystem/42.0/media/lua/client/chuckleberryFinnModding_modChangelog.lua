@@ -6,51 +6,17 @@ changelog_handler.modAlertConfig = {}
 
 changelog_handler.defaultButtonColor = {r=0.64, g=0.8, b=0.02, a=0.75}
 changelog_handler.buttonData = {
-    ["https://steamcommunity.com/"] = {
-        color = { r = 0.4, g = 0.753, b = 0.957, a = 0.75 },
-        icon = getTexture("media/textures/alert/steam.png"),
-    },
-
-    ["https://ko%-fi.com/"] = {
-        color = { r = 0.447, g = 0.647, b = 0.949, a = 0.75 },
-        icon = getTexture("media/textures/alert/kofi.png"),
-    },
-
-    ["https://twitch.com/"] = {
-        color = { r = 0.392, g = 0.255, b = 0.647, a = 0.75 },
-        icon = getTexture("media/textures/alert/twitch.png"),
-    },
-
-    ["https://discord.gg/"] = {
-        color = { r = 0.345, g = 0.396, b = 0.949, a = 0.75 },
-        icon = getTexture("media/textures/alert/discord.png"),
-    },
-
-    ["https://youtube.com/"] = {
-        color = { r = 0.95, g = 0.0, b = 0.0, a = 0.75 },
-        icon = getTexture("media/textures/alert/youtube.png"),
-    },
-
-    ["https://github.com/"] = {
-        color = { r = 0.510, g = 0.314, b = 0.875, a = 0.75 },
-        icon = getTexture("media/textures/alert/github.png"),
-    },
-
-    ["https://patreon.com/"] = {
-        color = { r = 0.976, g = 0.408, b = 0.329, a = 0.75 },
-        icon = getTexture("media/textures/alert/patreon.png"),
-    },
-
-    ["https://theindiestone.com/"] = {
-        color = { r = 0.976, g = 0.149, b = 0.062, a = 0.75 },
-        icon = getTexture("media/textures/alert/theIndieStone.png"),
-    },
-
+    ["https://steamcommunity.com/"] = { color = { r = 0.4, g = 0.753, b = 0.957, a = 0.75 }, icon = getTexture("media/textures/alert/steam.png"), },
+    ["https://ko%-fi.com/"] = { color = { r = 0.447, g = 0.647, b = 0.949, a = 0.75 }, icon = getTexture("media/textures/alert/kofi.png"), },
+    ["https://twitch.com/"] = { color = { r = 0.392, g = 0.255, b = 0.647, a = 0.75 }, icon = getTexture("media/textures/alert/twitch.png"), },
+    ["https://discord.gg/"] = { color = { r = 0.345, g = 0.396, b = 0.949, a = 0.75 }, icon = getTexture("media/textures/alert/discord.png"), },
+    ["https://youtube.com/"] = { color = { r = 0.95, g = 0.0, b = 0.0, a = 0.75 }, icon = getTexture("media/textures/alert/youtube.png"), },
+    ["https://github.com/"] = { color = { r = 0.510, g = 0.314, b = 0.875, a = 0.75 }, icon = getTexture("media/textures/alert/github.png"), },
+    ["https://patreon.com/"] = { color = { r = 0.976, g = 0.408, b = 0.329, a = 0.75 }, icon = getTexture("media/textures/alert/patreon.png"), },
+    ["https://theindiestone.com/"] = { color = { r = 0.976, g = 0.149, b = 0.062, a = 0.75 }, icon = getTexture("media/textures/alert/theIndieStone.png"), },
+    ["https://projectzomboid.com/"] = { color = { r = 0.976, g = 0.149, b = 0.062, a = 0.75 }, icon = getTexture("media/textures/alert/theIndieStone.png"), },
     ---Funny easter-egg haha... 🗿
-    ["https://onlyfans.com/"] = {
-        color = { r = 0.0, g = 0.686, b = 0.941, a = 0.75 },
-        icon = getTexture("media/textures/alert/fans.png"),
-    },
+    ["https://onlyfans.com/"] = { color = { r = 0.0, g = 0.686, b = 0.941, a = 0.75 }, icon = getTexture("media/textures/alert/fans.png"), },
 }
 
 
@@ -145,9 +111,12 @@ end
 
 function changelog_handler.fetchMod(modID, latest)
 
-    local reader = getModFileReader(modID, "ChangeLog.txt", false)
-
-    if not reader then end
+    local reader = false--getModFileReader(modID, "ChangeLog.txt", false)
+    local md = false
+    if not reader then
+        md = true
+        reader = getModFileReader(modID, "ChangeLog.md", false)
+    end
 
     if not reader then return end
 
@@ -162,7 +131,12 @@ function changelog_handler.fetchMod(modID, latest)
     local completeText = table.concat(lines, "\n")
 
     local alerts = {}
-    local pattern = "%[ ([^%]]+)% ](.-)%[ ------ %]"
+    local pattern = md and "###%s*(.-)%s*###%s*(.-)%s*#" or "%[ ([^%]]+)% ](.-)%[ ------ %]"
+
+    local config = md and completeText:match("<!%-%- ALERT_CONFIG\n(.-)\n%-%->")
+    if config then
+        changelog_handler.parseModAlertConfig(modID, config)
+    end
 
     for title, contents in string.gmatch(completeText, pattern) do
         local cleaned_contents = contents:gsub("^%s*\n", "")
