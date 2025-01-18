@@ -1,10 +1,3 @@
-[ ALERT_CONFIG ]
-link1 = Chuck's Kofi = https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/chuckleberryfinn,
-link2 = Workshop = https://steamcommunity.com/id/Chuckleberry_Finn/myworkshopfiles/?appid=108600,
-link3 = Youtube = https://steamcommunity.com/linkfilter/?u=https://youtube.com/@chu_uck,
-link4 = Github = https://steamcommunity.com/linkfilter/?u=https://github.com/Chuckleberry-Finn,
-[ ------ ]
-
 [ 11/22/24 ]
 New and working alert system.
 - Saves collapse of system and message.
@@ -38,6 +31,12 @@ New and working alert system.
 - Fixed issue with un-collapsing sometimes not respecting the dropMessage's status.
 [ ------ ]
 
+[ ALERT_CONFIG ]
+link1 = Chuck's Kofi = https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/chuckleberryfinn,
+link2 = Workshop = https://steamcommunity.com/id/Chuckleberry_Finn/myworkshopfiles/?appid=108600,
+link3 = Github = https://steamcommunity.com/linkfilter/?u=https://github.com/Chuckleberry-Finn,
+[ ------ ]
+
 [ 1/18/25 - Remaster for B42 ]
 Remastered the UI to be more streamlined based on feedback:
 - No longer separate mod-alert and drop message.
@@ -49,4 +48,6 @@ Remastered the UI to be more streamlined based on feedback:
 The system has been remastered into a true API - so that any mod-author can make use of it:
 - As before only requires mod-author to include a ChangeLog.txt (Now expected in /common/ for B42+, as before /media/ for B41-)
 - Alerts support programmable buttons by the mod's respective author.
+- Well known sites are color-coded and override a provided title with a logo.
+See: ChangeLog.txt entry: ALERT_CONFIG for an example.
 [ ------ ]
