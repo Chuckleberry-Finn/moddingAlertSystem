@@ -47,9 +47,11 @@ Remastered the UI to be more streamlined based on feedback:
 
 The system has been remastered into a true API - so that any mod-author can make use of it:
 - As before only requires mod-author to include a ChangeLog.txt (Now expected in /common/ for B42+, as before /media/ for B41-)
-- Also supports the use of a changelog.md file if a changelog.txt file is not present, see `ChangeLog.md` for that format.
+- Also supports the use of a changelog.md file if a changelog.txt file is not present, see `ChangeLog.md` for that format. (Suggestion: Omar)
 - Alerts support programmable buttons by the mod's respective author.
 - Well known sites are color-coded and override a provided title with a logo.
 - Sites that do not start with: `https://steamcommunity.com`, `https://projectzomboid.com`, `https://theindiestone.com`, require Steam's link filter: `https://steamcommunity.com/linkfilter/?u=`.
 See: `ChangeLog.txt` and `ChangeLog.md` entry: ALERT_CONFIG for an example.
+
+Fixes: Anchored UI to handle screen size changes.
 [ ------ ]

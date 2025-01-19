@@ -149,6 +149,29 @@ function alertSystem:render()
 
 end
 
+function alertSystem:updateButtonTooltip()
+    if self:isMouseOver() and self.tooltip then
+        local text = self.tooltip
+        if not self.tooltipUI then
+            self.tooltipUI = ISToolTip:new()
+            self.tooltipUI:setOwner(self)
+            self.tooltipUI:setHeight(self:getHeight())
+            self.tooltipUI:setVisible(false)
+            self.tooltipUI:setAlwaysOnTop(true)
+        end
+        if not self.tooltipUI:getIsVisible() then
+            self.tooltipUI:addToUIManager()
+            self.tooltipUI:setVisible(true)
+        end
+        self.tooltipUI.description = text
+        self.tooltipUI:setDesiredPosition(self:getAbsoluteX()+self:getWidth(), self:getAbsoluteY())
+    else
+        if self.tooltipUI and self.tooltipUI:getIsVisible() then
+            self.tooltipUI:setVisible(false)
+            self.tooltipUI:removeFromUIManager()
+        end
+    end
+end
 
 function alertSystem:updateButtons()
     local alertModID = self.alertsLoaded[self.alertSelected]
@@ -161,6 +184,8 @@ function alertSystem:updateButtons()
             if buttonData then
                 visible = true
                 button.url = buttonData.url
+                button.tooltip = buttonData.url
+                button.updateTooltip = alertSystem.updateButtonTooltip
                 button.borderColor = buttonData.color
                 button.backgroundColor = {r=buttonData.color.r, g=buttonData.color.g, b=buttonData.color.b, a=0.06}
                 button:setImage(buttonData.icon)
@@ -222,7 +247,13 @@ function alertSystem:collapseApply()
     local drop = self.collapsed
     local modifyThese = {self.collapse, self.collapseLabel}
     self:setHeight(drop and self.originalH-self.bodyH or self.originalH)
-    self:setY(drop and self.originalY+self.bodyH or self.originalY)
+
+    local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
+    local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
+    local yOffset = MainScreen.instance and MainScreen.instance.resetLua and MainScreen.instance:getHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+    local y = MainScreen.instance:getHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
+
+    self:setY(drop and y+self.bodyH or y)
     for _,ui in pairs(modifyThese) do
         ui:setY(drop and ui.originalY-self.bodyH or ui.originalY)
     end
@@ -298,6 +329,7 @@ function alertSystem:initialise()
     --]]
 
     ---Message here
+    changelog_handler.parseModAlertConfig("", "link1 = Chuck's Kofi = https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/chuckleberryfinn")
     self.latestAlerts[""] = {
         modName = getText("IGUI_ChuckAlertHeaderMsg"),
         alerts = {{title = "", contents = getText("IGUI_ChuckAlertDonationMsg")}},
@@ -310,7 +342,7 @@ function alertSystem:initialise()
 
     self.alertContentPanel = ISPanelJoypad:new(self.padding, self.padding*3.5, self.width-self.padding*2, self.height-self.padding*5.3)
     self.alertContentPanel.originalH = self.alertContentPanel.height
-    self.alertContentPanel.originalY = self.alertContentPanel.y
+    self.alertContentPanel.originalY = self.alertContentPanel:getAbsoluteY()
     self.alertContentPanel.backgroundColor = {r=0, g=0, b=0, a=0}
     self.alertContentPanel:initialise()
     self.alertContentPanel:instantiate()
@@ -319,7 +351,7 @@ function alertSystem:initialise()
 
 
     self.collapse = ISButton:new(0, self:getHeight()-48, 48, 48, "", self, alertSystem.onClickCollapse)
-    self.collapse.originalY = self.collapse.y
+    self.collapse.originalY = self.collapse:getAbsoluteY()
     self.collapse:setImage(alertSystem.collapseTexture)
     self.collapse.onRightMouseDown = alertSystem.hideThis
     self.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Close")
@@ -331,7 +363,7 @@ function alertSystem:initialise()
     self:addChild(self.collapse)
 
     self.collapseLabel = ISLabel:new(self.collapse.x+17, self:getHeight()-17, 10, getText("IGUI_ChuckAlertCollapse"), 1, 1, 1, 1, UIFont.AutoNormSmall, true)
-    self.collapseLabel.originalY = self.collapseLabel.y
+    self.collapseLabel.originalY = self.collapseLabel:getAbsoluteY()
     self.collapseLabel:initialise()
     self.collapseLabel:instantiate()
     self:addChild(self.collapseLabel)
@@ -342,7 +374,7 @@ function alertSystem:initialise()
     for i=1, 4 do
         local button = ISButton:new(btnOffset + (((self.padding/6)+btnWid) * (i-1)), alertSystem.buttonsYOffset-(btnHgt/2), btnWid, btnHgt, "button "..i, self, alertSystem.onClickLinkButton)
         button.urlID = i
-        button.originalY = button.y
+        button.originalY = button:getAbsoluteY()
         button.borderColor = {r=0.64, g=0.8, b=0.02, a=0.9}
         button.backgroundColor = {r=0, g=0, b=0, a=0.6}
         button.textColor = {r=0.64, g=0.8, b=0.02, a=1}
@@ -381,8 +413,8 @@ function alertSystem.display(visible)
 
     if hidden_per_session then return end
 
-    local alert = MainScreen.instance.donateAlert
-    if not MainScreen.instance.donateAlert then
+    local alert = MainScreen.instance.alertSystem
+    if not MainScreen.instance.alertSystem then
 
         if (not alertSystem.spiffoTexture) and alertSystem.spiffoTextures and #alertSystem.spiffoTextures>0 then
             local rand = ZombRand(#alertSystem.spiffoTextures)+1
@@ -404,12 +436,16 @@ function alertSystem.display(visible)
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
-        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding*0.5)
+        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and MainScreen.instance:getHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+        local y = MainScreen.instance:getHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
         alert = alertSystem:new(x, y, windowW, windowH)
+        alert:setAnchorLeft(false)
+        alert:setAnchorTop(false)
+        alert:setAnchorRight(true)
+        alert:setAnchorBottom(true)
         alert:initialise()
-        MainScreen.instance.donateAlert = alert
+        MainScreen.instance.alertSystem = alert
         MainScreen.instance:addChild(alert)
     end
 
@@ -443,8 +479,6 @@ function alertSystem:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
     o.borderColor, o.backgroundColor = {r=0, g=0, b=0, a=0}, {r=0, g=0, b=0, a=0}
-    o.originalX = x
-    o.originalY = y
     o.originalH = height
     o.width, o.height =  width, height
     return o

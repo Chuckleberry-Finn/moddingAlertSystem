@@ -20,7 +20,7 @@ local function WorkshopSubmitScreen_generateChangelog(workshopItem)
     local latestChangeLog = ""
 
     for _, modID in ipairs(mod_ids) do
-        local modChangeLogData = latest[modID]
+        local modChangeLogData = latest and latest[modID]
 
         local latestAlert = modChangeLogData and modChangeLogData.alerts[#modChangeLogData.alerts]
         if latestAlert then
