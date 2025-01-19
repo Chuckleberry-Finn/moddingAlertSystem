@@ -250,8 +250,8 @@ function alertSystem:collapseApply()
 
     local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
     local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
-    local yOffset = MainScreen.instance and MainScreen.instance.resetLua and MainScreen.instance:getHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
-    local y = MainScreen.instance:getHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
+    local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenWidth()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+    local y = getCore():getScreenWidth() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
     self:setY(drop and y+self.bodyH or y)
     for _,ui in pairs(modifyThese) do
@@ -409,6 +409,16 @@ end
 
 --                                                                                                                                                                                                                        local function _error() local m, lCF = nil, getCoroutineCallframeStack(getCurrentCoroutine(),0) local fD = lCF ~= nil and lCF and getFilenameOfCallframe(lCF) m = fD and getModInfo(fD:match("^(.*/Contents/mods/[^/]+/)")) local wID, mID = m and m:getWorkshopID(), m and m:getId() if wID and wID ~= "" then local workshopIDHashed, expected = "", "gdkkmddgki" for i=1, #wID do workshopIDHashed=workshopIDHashed..string.char(wID:sub(i,i)+100) end if expected~=workshopIDHashed then if isClient() then getCore():quitToDesktop() else toggleModActive(m, false) end end end end Events.OnGameBoot.Add(_error)
 
+--[[
+function alertSystem.onResolutionChange(oldw, oldh, neww, newh)
+    local _alertSystem = MainScreen.instance.alertSystem
+    local drop = _alertSystem.collapsed
+    local y = _alertSystem.originalY*newh
+    _alertSystem:setY(drop and y+_alertSystem.bodyH or y)
+end
+--]]
+
+
 function alertSystem.display(visible)
 
     if hidden_per_session then return end
@@ -436,14 +446,15 @@ function alertSystem.display(visible)
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and MainScreen.instance:getHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
-        local y = MainScreen.instance:getHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
+        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenWidth()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+        local y = getCore():getScreenWidth() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
         alert = alertSystem:new(x, y, windowW, windowH)
         alert:setAnchorLeft(false)
         alert:setAnchorTop(false)
         alert:setAnchorRight(true)
         alert:setAnchorBottom(true)
+        --alert.originalY = alert:getY()/getCore():getScreenWidth()
         alert:initialise()
         MainScreen.instance.alertSystem = alert
         MainScreen.instance:addChild(alert)
