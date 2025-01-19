@@ -250,8 +250,8 @@ function alertSystem:collapseApply()
 
     local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
     local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
-    local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenWidth()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
-    local y = getCore():getScreenWidth() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
+    local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+    local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
     self:setY(drop and y+self.bodyH or y)
     for _,ui in pairs(modifyThese) do
@@ -446,8 +446,8 @@ function alertSystem.display(visible)
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenWidth()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
-        local y = getCore():getScreenWidth() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
+        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+        local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
         alert = alertSystem:new(x, y, windowW, windowH)
         alert:setAnchorLeft(false)
@@ -462,6 +462,8 @@ function alertSystem.display(visible)
 
     if visible ~= false and visible ~= true then visible = MainScreen and MainScreen.instance and MainScreen.instance:isVisible() end
     alert:setVisible(visible)
+
+    print("alert: ", alert.x, ", ", alert.y, " - ", alert:isVisible())
 
     local reader = getFileReader("chuckleberryFinn_moddingAlerts_config.txt", false)
     if reader then
@@ -495,11 +497,31 @@ function alertSystem:new(x, y, width, height)
     return o
 end
 
-
-local MainScreen_onEnterFromGame = MainScreen.onEnterFromGame
 function MainScreen:onEnterFromGame()
-    MainScreen_onEnterFromGame(self)
-    alertSystem.display(true)
+    print("MainScreen:onEnterFromGame")
+    GameSounds.fix3DListenerPosition(true)
+    for _,child in pairs(self:getChildren()) do
+
+        if child == MainScreen.instance.alertSystem then
+            print("ALERT SYSTEM ALERT SYSTEM")
+        end
+
+        if child.onEnterFromGame then
+            child:onEnterFromGame()
+        end
+    end
+end
+
+function alertSystem:onEnterFromGame()
+    print("onEnterFromGame: alertSystem")
+    local alert = MainScreen.instance.alertSystem
+    alert.display(true)
+end
+
+function alertSystem:onReturnToGame()
+    print("onReturnToGame: alertSystem")
+    local alert = MainScreen.instance.alertSystem
+    alert.display(false)
 end
 
 local MainScreen_setBottomPanelVisible = MainScreen.setBottomPanelVisible
@@ -507,6 +529,5 @@ function MainScreen:setBottomPanelVisible(visible)
     MainScreen_setBottomPanelVisible(self, visible)
     alertSystem.display(visible)
 end
-
 
 return alertSystem
