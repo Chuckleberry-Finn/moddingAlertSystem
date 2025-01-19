@@ -411,10 +411,13 @@ end
 
 --[[
 function alertSystem.onResolutionChange(oldw, oldh, neww, newh)
-    local _alertSystem = MainScreen.instance.alertSystem
-    local drop = _alertSystem.collapsed
-    local y = _alertSystem.originalY*newh
-    _alertSystem:setY(drop and y+_alertSystem.bodyH or y)
+    --local _alertSystem = MainScreen.instance.alertSystem
+    --local drop = _alertSystem.collapsed
+    --local y = _alertSystem.originalY*newh
+    --_alertSystem:setY(drop and y+_alertSystem.bodyH or y)
+
+    print("getScreenWidth: ", getCore():getScreenWidth())
+    print("getScreenHeight: ", getCore():getScreenHeight())
 end
 --]]
 
