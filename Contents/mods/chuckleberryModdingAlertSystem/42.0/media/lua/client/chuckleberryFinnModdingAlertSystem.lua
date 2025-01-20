@@ -87,6 +87,7 @@ function alertSystem:prerender()
         local alertIcon = alertModData.icon
         local header = modName
         local subHeader = alertModID ~= "" and " ("..alertModID..")"
+        local modAuthor = alertModData.modAuthor
         local layout = self:determineLayout(alertModID, header, subHeader, alertTitle, alertContents, alertIcon)
 
         if layout.alertIcon then self:drawTexture(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 1, 1, 1, 1) end
@@ -101,6 +102,11 @@ function alertSystem:prerender()
         local titleY = layout.headerY+layout.headerH+(alertSystem.padding/7)
         if alertTitle then
             self:drawText(alertTitle, layout.headerX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
+        end
+
+        if modAuthor then
+            local authorX = self.alertContentPanel:getX()+self.alertContentPanel:getWidth()-(alertSystem.padding/4)
+            self:drawTextRight(modAuthor, authorX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
         end
 
         self.alertContentPanel:setY((titleY+layout.titleH+(alertSystem.padding/7)))

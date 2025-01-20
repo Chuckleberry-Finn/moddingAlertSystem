@@ -86,6 +86,7 @@ function changelog_handler.fetchAllModsLatest()
         local modInfo = getModInfoByID(modID)
         local modName = modInfo and modInfo:getName()
         local modIcon = modInfo and modInfo:getIcon()
+        local modAuthor = modInfo and modInfo:getAuthor()
         local latestTitleStored = changelog_handler.scannedMods and changelog_handler.scannedMods[modID]
         local alerts = changelog_handler.fetchMod(modID, latestTitleStored)
         if alerts then
@@ -93,7 +94,7 @@ function changelog_handler.fetchAllModsLatest()
             local lCTitle = latestCurrent and latestCurrent.title
 
             latest = latest or {}
-            latest[modID] = {modName = modName, alerts = alerts, icon = modIcon}
+            latest[modID] = {modName = modName, alerts = alerts, icon = modIcon, modAuthor = modAuthor}
 
             if latestTitleStored and latestTitleStored == lCTitle then
                 latest[modID].alreadyStored = true
