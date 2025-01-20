@@ -55,3 +55,9 @@ See: `ChangeLog.txt` and `ChangeLog.md` entry: ALERT_CONFIG for an example.
 
 Fixes: Anchored UI to handle screen size changes.
 [ ------ ]
+
+[ 1/20/25 ]
+- Added support for 'Author' field in Mod.info to appear on alerts.
+- Moved the 'Message from Chuck' to appear behind new alerts.
+- Added two more Spiffos to the art selector.
+[ ------ ]

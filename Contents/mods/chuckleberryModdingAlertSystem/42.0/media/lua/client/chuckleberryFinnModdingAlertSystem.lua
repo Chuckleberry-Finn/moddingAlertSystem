@@ -4,7 +4,12 @@ local alertSystem = ISPanelJoypad:derive("alertSystem")
 
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 
-alertSystem.spiffoTextures = {"media/textures/spiffos/spiffoWatermelon.png"}
+alertSystem.spiffoTextures = {
+    "media/textures/spiffos/spiffoWatermelon.png",
+    "media/textures/spiffos/jumpingSpiffo.png",
+}
+---TODO: listFilesInModDirectory()
+
 function alertSystem.addTexture(path) table.insert(alertSystem.spiffoTextures, path) end
 
 alertSystem.alertSelected = 1
@@ -302,9 +307,6 @@ function alertSystem:initialise()
     ---local msg = latest.title.."\n"..tostring(data.modName).." ("..modID..")\n"..latest.contents
     ---for modID,data in pairs(self.latestAlerts) do
 
-    ---Load "" first, used for the welcome message.
-    table.insert(self.alertsLoaded, "")
-
     local tmpTableOld = {}
 
     if self.latestAlerts then
@@ -320,6 +322,9 @@ function alertSystem:initialise()
             end
         end
     end
+
+    ---Load "", used for the welcome message.
+    table.insert(self.alertsLoaded, "")
 
     for _,modID in pairs(tmpTableOld) do table.insert(self.alertsLoaded, modID) end
 
