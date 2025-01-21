@@ -61,3 +61,9 @@ Fixes: Anchored UI to handle screen size changes.
 - Moved the 'Message from Chuck' to appear behind new alerts.
 - Added another Spiffo to the art selector.
 [ ------ ]
+
+[ 1/21/25 ]
+- Fix scroll-wheel not updating buttons.
+- Moved button update setter.
+- Set icons to scale to 32x32.
+[ ------ ]
