@@ -95,7 +95,7 @@ function alertSystem:prerender()
         local modAuthor = alertModData.modAuthor
         local layout = self:determineLayout(alertModID, header, subHeader, alertTitle, alertContents, alertIcon)
 
-        if layout.alertIcon then self:drawTexture(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 1, 1, 1, 1) end
+        if layout.alertIcon then self:drawTextureScaled(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 32, 32, 1, 1, 1, 1) end
 
         local maxSubheaderX = math.min( ((alertSystem.padding*1.5)+layout.headerW), (self.width-layout.subHeaderW) )
         if subHeader then
