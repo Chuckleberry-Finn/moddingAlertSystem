@@ -196,7 +196,6 @@ function alertSystem:updateButtons()
                 visible = true
                 button.url = buttonData.url
                 button.tooltip = buttonData.url
-                button.updateTooltip = alertSystem.updateButtonTooltip
                 button.borderColor = buttonData.color
                 button.backgroundColor = {r=buttonData.color.r, g=buttonData.color.g, b=buttonData.color.b, a=0.06}
                 button:setImage(buttonData.icon)
@@ -389,6 +388,7 @@ function alertSystem:initialise()
         button.borderColor = {r=0.64, g=0.8, b=0.02, a=0.9}
         button.backgroundColor = {r=0, g=0, b=0, a=0.6}
         button.textColor = {r=0.64, g=0.8, b=0.02, a=1}
+        button.updateTooltip = alertSystem.updateButtonTooltip
         button:initialise()
         button:instantiate()
         button:setVisible(false)
