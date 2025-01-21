@@ -66,4 +66,5 @@ Fixes: Anchored UI to handle screen size changes.
 - Fix scroll-wheel not updating buttons.
 - Moved button update setter.
 - Set icons to scale to 32x32.
+- Removed RU translation (reported as broken.)
 [ ------ ]
