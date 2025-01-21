@@ -42,6 +42,7 @@ function alertSystem:onMouseWheel(del)
         if self.alertSelected > #self.alertsLoaded then self.alertSelected = 1 end
         if self.alertSelected <= 0 then self.alertSelected = #self.alertsLoaded end
         getSoundManager():playUISound("UIActivateButton")
+        self:updateButtons()
     end
 end
 
