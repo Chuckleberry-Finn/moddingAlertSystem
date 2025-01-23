@@ -68,3 +68,7 @@ Fixes: Anchored UI to handle screen size changes.
 - Set icons to scale to 32x32.
 - Removed RU translation (reported as broken.)
 [ ------ ]
+
+[ 1/23/25 ]
+- Removed debug print calls.
+[ ------ ]

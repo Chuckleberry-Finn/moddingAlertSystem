@@ -427,9 +427,6 @@ function alertSystem.onResolutionChange(oldw, oldh, neww, newh)
     --local drop = _alertSystem.collapsed
     --local y = _alertSystem.originalY*newh
     --_alertSystem:setY(drop and y+_alertSystem.bodyH or y)
-
-    print("getScreenWidth: ", getCore():getScreenWidth())
-    print("getScreenHeight: ", getCore():getScreenHeight())
 end
 --]]
 
@@ -478,8 +475,6 @@ function alertSystem.display(visible)
     if visible ~= false and visible ~= true then visible = MainScreen and MainScreen.instance and MainScreen.instance:isVisible() end
     alert:setVisible(visible)
 
-    print("alert: ", alert.x, ", ", alert.y, " - ", alert:isVisible())
-
     local reader = getFileReader("chuckleberryFinn_moddingAlerts_config.txt", false)
     if reader then
         local lines = {}
@@ -513,14 +508,8 @@ function alertSystem:new(x, y, width, height)
 end
 
 function MainScreen:onEnterFromGame()
-    print("MainScreen:onEnterFromGame")
     GameSounds.fix3DListenerPosition(true)
     for _,child in pairs(self:getChildren()) do
-
-        if child == MainScreen.instance.alertSystem then
-            print("ALERT SYSTEM ALERT SYSTEM")
-        end
-
         if child.onEnterFromGame then
             child:onEnterFromGame()
         end
@@ -528,13 +517,11 @@ function MainScreen:onEnterFromGame()
 end
 
 function alertSystem:onEnterFromGame()
-    print("onEnterFromGame: alertSystem")
     local alert = MainScreen.instance.alertSystem
     alert.display(true)
 end
 
 function alertSystem:onReturnToGame()
-    print("onReturnToGame: alertSystem")
     local alert = MainScreen.instance.alertSystem
     alert.display(false)
 end
