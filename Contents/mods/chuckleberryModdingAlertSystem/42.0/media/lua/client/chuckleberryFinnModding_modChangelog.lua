@@ -42,7 +42,7 @@ function changelog_handler.parseModAlertConfig(modID, configText)
                 break
             end
         end
-        configTable[key] = { title = (icon and "" or title), url = url, color = color, icon = icon}
+        configTable[key] = { title = title, url = url, color = color, icon = icon}
     end
 
     changelog_handler.modAlertConfig[modID] = configTable

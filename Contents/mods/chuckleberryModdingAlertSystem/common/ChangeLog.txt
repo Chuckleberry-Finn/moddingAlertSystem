@@ -71,4 +71,5 @@ Fixes: Anchored UI to handle screen size changes.
 
 [ 1/23/25 ]
 - Removed debug print calls.
+- Added button's title to tooltip if icon present.
 [ ------ ]

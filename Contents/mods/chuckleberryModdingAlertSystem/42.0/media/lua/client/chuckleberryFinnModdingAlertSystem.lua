@@ -196,12 +196,12 @@ function alertSystem:updateButtons()
             if buttonData then
                 visible = true
                 button.url = buttonData.url
-                button.tooltip = buttonData.url
+                button.tooltip = (buttonData.icon and (buttonData.title.."\n") or "")..buttonData.url
                 button.borderColor = buttonData.color
                 button.backgroundColor = {r=buttonData.color.r, g=buttonData.color.g, b=buttonData.color.b, a=0.06}
                 button:setImage(buttonData.icon)
                 button.textColor = buttonData.color
-                button:setTitle(buttonData.title)
+                button:setTitle(buttonData.icon and "" or buttonData.title)
             end
         end
         button:setVisible((visible) and (not self.collapsed))
