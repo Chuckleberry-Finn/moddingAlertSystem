@@ -443,14 +443,15 @@ function alertSystem.display(visible)
             alertSystem.spiffoTexture = getTexture(alertSystem.spiffoTextures[rand])
         end
 
-        alertSystem.padding = 24
-        alertSystem.btnWid = 100
-        alertSystem.btnHgt = 20
-        alertSystem.headerW = 247
-        alertSystem.headerH = 23
+        alertSystem.bodyW = getCore():getScreenWidth() * 0.244 --470 ---1920
+        alertSystem.bodyH = getCore():getScreenHeight() * 0.166 --180 ---1080
+
+        alertSystem.padding = alertSystem.bodyW * 0.05
+        alertSystem.btnWid = alertSystem.bodyW * 0.2
+        alertSystem.btnHgt = alertSystem.bodyH * 0.111
+        alertSystem.headerW = alertSystem.bodyW * 0.525
+        alertSystem.headerH = alertSystem.bodyH * 0.217
         alertSystem.headerYOffset = alertSystem.padding*0.4
-        alertSystem.bodyW = 470
-        alertSystem.bodyH = 180
 
         alertSystem.bodyYOffset = alertSystem.headerYOffset+alertSystem.headerH+(alertSystem.padding*0.5)
         alertSystem.buttonsYOffset = alertSystem.bodyYOffset+alertSystem.bodyH+(alertSystem.padding*0.5)
