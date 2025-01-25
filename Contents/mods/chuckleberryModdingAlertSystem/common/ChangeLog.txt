@@ -78,3 +78,7 @@ Fixes: Anchored UI to handle screen size changes.
 - The alert window now scales to fit screen size.
 - The alert window now anchors to one of the bottom panel buttons when possible.
 [ ------ ]
+
+[ PENDING ]
+- Added RU translation. (credit: Slobodskoy)
+[ ------ ]
