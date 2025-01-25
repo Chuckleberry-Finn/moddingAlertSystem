@@ -261,7 +261,8 @@ function alertSystem:collapseApply()
 
     local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
     local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
-    local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+    local uiChild = MainScreen.instance and MainScreen.instance.resetLua or MainScreen.instance.modListDetail or MainScreen.instance.termsOfService
+    local yOffset = uiChild and getCore():getScreenHeight()-uiChild.y or 110+(alertSystem.padding*0.5)
     local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
     self:setY(drop and y+self.bodyH or y)
@@ -443,12 +444,12 @@ function alertSystem.display(visible)
             alertSystem.spiffoTexture = getTexture(alertSystem.spiffoTextures[rand])
         end
 
-        alertSystem.bodyW = getCore():getScreenWidth() * 0.244 --470 ---1920
-        alertSystem.bodyH = getCore():getScreenHeight() * 0.166 --180 ---1080
+        alertSystem.bodyW = getCore():getScreenWidth() * 0.245 --470 ---1920
+        alertSystem.bodyH = getCore():getScreenHeight() * 0.167 --180 ---1080
 
         alertSystem.padding = alertSystem.bodyW * 0.05
         alertSystem.btnWid = alertSystem.bodyW * 0.2
-        alertSystem.btnHgt = alertSystem.bodyH * 0.111
+        alertSystem.btnHgt = alertSystem.bodyH * 0.12
         alertSystem.headerW = alertSystem.bodyW * 0.525
         alertSystem.headerH = alertSystem.bodyH * 0.217
         alertSystem.headerYOffset = alertSystem.padding*0.4
@@ -459,7 +460,9 @@ function alertSystem.display(visible)
         local textureH = alertSystem.spiffoTexture and alertSystem.spiffoTexture:getHeight() or 0
         local windowH = alertSystem.buttonsYOffset + alertSystem.btnHgt
         local x, windowW = alertSystem:adjustWidthToSpiffo(true)
-        local yOffset = MainScreen.instance and MainScreen.instance.resetLua and getCore():getScreenHeight()-MainScreen.instance.resetLua.y or 110+(alertSystem.padding*0.5)
+
+        local uiChild = MainScreen.instance and MainScreen.instance.resetLua or MainScreen.instance.modListDetail or MainScreen.instance.termsOfService
+        local yOffset = uiChild and getCore():getScreenHeight()-uiChild.y or 110+(alertSystem.padding*0.5)
         local y = getCore():getScreenHeight() - math.max(windowH,textureH) - yOffset - (alertSystem.padding)
 
         alert = alertSystem:new(x, y, windowW, windowH)

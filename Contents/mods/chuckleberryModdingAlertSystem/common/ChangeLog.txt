@@ -73,3 +73,8 @@ Fixes: Anchored UI to handle screen size changes.
 - Removed debug print calls.
 - Added button's title to tooltip if icon present.
 [ ------ ]
+
+[ 1/24/25 ]
+- The alert window now scales to fit screen size.
+- The alert window now anchors to one of the bottom panel buttons when possible.
+[ ------ ]
