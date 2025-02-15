@@ -81,5 +81,6 @@ Fixes: Anchored UI to handle screen size changes.
 
 [ 2/15/2025 ]
 - Added RU translation. (credit: Slobodskoy)
+- Added missing translations. (chuck's pz-translator.)
 - Changed B41 getTexture to point to B42's textures.
 [ ------ ]
