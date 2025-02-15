@@ -79,6 +79,7 @@ Fixes: Anchored UI to handle screen size changes.
 - The alert window now anchors to one of the bottom panel buttons when possible.
 [ ------ ]
 
-[ PENDING ]
+[ 2/15/2025 ]
 - Added RU translation. (credit: Slobodskoy)
+- Changed B41 getTexture to point to B42's textures.
 [ ------ ]

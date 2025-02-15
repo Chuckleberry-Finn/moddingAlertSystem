@@ -5,8 +5,8 @@ local alertSystem = ISPanelJoypad:derive("alertSystem")
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 
 alertSystem.spiffoTextures = {
-    "media/textures/spiffos/spiffoWatermelon.png",
-    "media/textures/spiffos/jumpingSpiffo.png",
+    "common/media/textures/spiffos/spiffoWatermelon.png",
+    "common/media/textures/spiffos/jumpingSpiffo.png",
 }
 function alertSystem.addTexture(path) table.insert(alertSystem.spiffoTextures, path) end
 
@@ -14,15 +14,15 @@ alertSystem.alertSelected = 1
 alertSystem.alertsLoaded = {}
 alertSystem.alertsLayout = {}
 alertSystem.alertsOld = 0
-alertSystem.rateTexture = getTexture("media/textures/alert/rate.png")
-alertSystem.expandTexture = getTexture("media/textures/alert/expand.png")
-alertSystem.collapseTexture = getTexture("media/textures/alert/collapse.png")
-alertSystem.raiseTexture = getTexture("media/textures/alert/raise.png")
-alertSystem.alertTextureEmpty = getTexture("media/textures/alert/alertEmpty.png")
-alertSystem.alertTextureFull = getTexture("media/textures/alert/alertFull.png")
+alertSystem.rateTexture = getTexture("common/media/textures/alert/rate.png")
+alertSystem.expandTexture = getTexture("common/media/textures/alert/expand.png")
+alertSystem.collapseTexture = getTexture("common/media/textures/alert/collapse.png")
+alertSystem.raiseTexture = getTexture("common/media/textures/alert/raise.png")
+alertSystem.alertTextureEmpty = getTexture("common/media/textures/alert/alertEmpty.png")
+alertSystem.alertTextureFull = getTexture("common/media/textures/alert/alertFull.png")
 
-alertSystem.alertLeft = getTexture("media/textures/alert/left.png")
-alertSystem.alertRight = getTexture("media/textures/alert/right.png")
+alertSystem.alertLeft = getTexture("common/media/textures/alert/left.png")
+alertSystem.alertRight = getTexture("common/media/textures/alert/right.png")
 
 local hidden_per_session = false
 
