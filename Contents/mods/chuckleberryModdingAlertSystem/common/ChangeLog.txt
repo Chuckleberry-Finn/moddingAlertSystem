@@ -84,3 +84,7 @@ Fixes: Anchored UI to handle screen size changes.
 - Added missing translations. (chuck's pz-translator.)
 - Changed B41 getTexture to point to B42's textures.
 [ ------ ]
+
+[ 3/29/25 ]
+- Made the default state for the Alert-System collapsed. (Pertominus)
+[ ------ ]

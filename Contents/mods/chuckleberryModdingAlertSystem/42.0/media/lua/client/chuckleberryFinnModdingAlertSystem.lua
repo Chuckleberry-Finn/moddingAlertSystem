@@ -474,6 +474,8 @@ function alertSystem.display(visible)
         alert:initialise()
         MainScreen.instance.alertSystem = alert
         MainScreen.instance:addChild(alert)
+
+        alert.collapsed = true
     end
 
     if visible ~= false and visible ~= true then visible = MainScreen and MainScreen.instance and MainScreen.instance:isVisible() end
@@ -496,8 +498,9 @@ function alertSystem.display(visible)
             if setValue == "false" then setValue = false end
             alert[param] = setValue
         end
-        alert:collapseApply()
     end
+
+    alert:collapseApply()
 end
 
 
