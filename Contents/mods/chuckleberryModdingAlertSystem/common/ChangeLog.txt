@@ -86,5 +86,5 @@ Fixes: Anchored UI to handle screen size changes.
 [ ------ ]
 
 [ 3/29/25 ]
-- Made the default state for the Alert-System collapsed. (Pertominus)
+- Made the default state for the Alert-System collapsed. (inspired by/dedicated to Pertominus)
 [ ------ ]
