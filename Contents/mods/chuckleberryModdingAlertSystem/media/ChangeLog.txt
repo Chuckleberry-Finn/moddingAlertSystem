@@ -90,5 +90,5 @@ Fixes: Anchored UI to handle screen size changes.
 [ ------ ]
 
 [ 4/27/25 ]
-- B42: No longer supports media/ position for changelogs; B42 changelogs expected only in common/.
+- B41: Supports B41 exclusive changelogs in media/ position only now.
 [ ------ ]
