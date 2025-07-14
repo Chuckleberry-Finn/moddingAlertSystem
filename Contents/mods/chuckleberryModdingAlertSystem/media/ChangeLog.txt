@@ -92,3 +92,7 @@ Fixes: Anchored UI to handle screen size changes.
 [ 4/27/25 ]
 - B41: Supports B41 exclusive changelogs in media/ position only now.
 [ ------ ]
+
+[ 7/14/25 ]
+- Fix: Uploader's changelog can be populated without having the mod active. (oops)
+[ ------ ]

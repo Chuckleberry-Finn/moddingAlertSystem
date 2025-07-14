@@ -92,3 +92,7 @@ Fixes: Anchored UI to handle screen size changes.
 [ 4/27/25 ]
 - B42: No longer supports media/ position for changelogs; B42 changelogs expected only in common/.
 [ ------ ]
+
+[ 7/14/25 ]
+- Fix: Uploader's changelog can be populated without having the mod active. (oops)
+[ ------ ]

@@ -3,35 +3,29 @@ local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 
 ---@param workshopItem SteamWorkshopItem
 local function WorkshopSubmitScreen_generateChangelog(workshopItem)
+
     if not workshopItem or workshopItem:getChangeNote() ~= "" then return end
 
     local desc = workshopItem:getSubmitDescription()
-    local mod_ids = {}
 
+    local mod_id
     for line in desc:gmatch("[^\r\n]+") do
-        local mod_id = line:match("^Mod ID:%s*(.+)$")
-        if mod_id then
-            table.insert(mod_ids, mod_id)
-        end
+        mod_id = line:match("^Mod ID:%s*(.+)$")
     end
 
-    local latest = changelog_handler.fetchAllModsLatest()
+    if not mod_id then return end
 
-    local latestChangeLog = ""
+    local alerts = changelog_handler.fetchMod(mod_id)
+    local latest = alerts and alerts[#alerts]
 
-    for _, modID in ipairs(mod_ids) do
-        local modChangeLogData = latest and latest[modID]
+    local latestTitle = latest and latest.title or ""
+    local latestContents = latest and latest.contents or ""
 
-        local latestAlert = modChangeLogData and modChangeLogData.alerts[#modChangeLogData.alerts]
-        if latestAlert then
-            latestChangeLog = latestChangeLog..latestAlert.contents.."\n"
-        end
+    local latestChangeLog = latestTitle.."\n"..latestContents
 
-        ---latest[modID] = {modName = modName, alerts = alerts}
-        ------alerts = {title = title, contents = contents}
+    if latestChangeLog:match("^%s*\n") then
+        latestChangeLog = latestChangeLog:gsub("^%s*\n", "", 1)
     end
-
-    if latestChangeLog:match("^%s*\n") then latestChangeLog = latestChangeLog:gsub("^%s*\n", "", 1) end
 
     workshopItem:setChangeNote(latestChangeLog)
 end
