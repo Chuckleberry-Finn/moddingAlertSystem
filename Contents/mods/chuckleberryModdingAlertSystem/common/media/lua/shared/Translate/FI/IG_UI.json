@@ -1,0 +1,8 @@
+{
+    "IGUI_ChuckAlertTooltip_Close": "Tiivistä napsauttamalla.<br>Piilota kokonaan tätä istuntoa varten napsauttamalla hiiren kakkospainiketta.",
+    "IGUI_ChuckAlertTooltip_Open": "Avaa napsauttamalla.<br>Piilota kokonaan tätä istuntoa varten napsauttamalla hiiren kakkospainiketta.",
+    "IGUI_ChuckAlertCollapse": "Romahdus",
+    "IGUI_ChuckAlertSeeAlerts": "Katso %1 hälytys%2",
+    "IGUI_ChuckAlertHeaderMsg": "Viesti Chuckleberry Finnilta",
+    "IGUI_ChuckAlertDonationMsg": "Vaikka pidän syvästi modaamisesta, se vaatii paljon aikaa ja energiaa, ja minun on tasapainotettava se muiden, erityisesti taloudellisten, velvollisuuksien kanssa. Selvittääkseni jatkan modeemien ylläpitoa, tukea, vianetsintää ja päivittämistä kuten aina. Näiden muiden prioriteettien on kuitenkin asetettava etusijalle.<br>{<br>Tämä sama tilanne voi koskea melkein kaikkia moddereita, ja täältä saattaa löytyä tukipainikkeet jokaiselle vastaavalle modille. Nämä painikkeet ovat muokattavissa ja mod-tekijöiden asettamia. Jos olet nauttinut minkä tahansa mod-tekijän ahkerasta työstä ja omistautumisesta ja haluat tukea sitä, harkitse sen tekemistä.<br><br>Henkilökohtaisesti lahjoitusten ansiosta minun on helpompi omistaa aikaa ja vaivaa projekteilleni. Se sanoi, ei ole mitään painetta; lahjoita vain, jos sinulla on olosi mukavaksi ja kykeneväksi. Minulle se, että nautit modeistani, on jo valtava palkinto.<br><br>Kiitos tuestasi ja ymmärryksestäsi!"
+}

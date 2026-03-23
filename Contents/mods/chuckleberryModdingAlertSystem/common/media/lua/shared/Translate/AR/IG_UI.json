@@ -1,0 +1,8 @@
+{
+    "IGUI_ChuckAlertTooltip_Close": "Haz clic para contraer.<br>Haz clic derecho para ocultar completamente esta sesión.",
+    "IGUI_ChuckAlertTooltip_Open": "Haz clic para abrir.<br>Haz clic derecho para ocultar completamente esta sesión.",
+    "IGUI_ChuckAlertCollapse": "Colapsar",
+    "IGUI_ChuckAlertSeeAlerts": "Ver %1 alerta%2",
+    "IGUI_ChuckAlertHeaderMsg": "Un mensaje de Chuckleberry Finn",
+    "IGUI_ChuckAlertDonationMsg": "Si bien disfruto mucho del modding, requiere mucho tiempo y energía, y necesito equilibrarlo con otras responsabilidades, particularmente las financieras. Para que quede claro, continuaré manteniendo, brindando soporte, solucionando problemas y actualizando mis mods como siempre lo he hecho. Sin embargo, estas otras prioridades deben ser lo primero.<br><br>Esta misma situación se puede aplicar a casi todos los modders, y aquí puedes encontrar botones de soporte para cada mod respectivo. Estos botones son personalizables y configurados por los autores del mod. Si has disfrutado del arduo trabajo y la dedicación de algún autor de mod y te gustaría apoyarlo, considera hacerlo.<br><br>Personalmente, las donaciones hacen que sea más factible para mí dedicar tiempo y esfuerzo a mis proyectos. Dicho esto, no hay absolutamente ninguna presión; Por favor, done sólo si se siente cómodo y capaz. Para mí, que disfrutes de mis modificaciones ya es una tremenda recompensa.<br><br>¡Gracias por tu apoyo y comprensión!"
+}
