@@ -1,8 +1,8 @@
 {
-    "IGUI_ChuckAlertTooltip_Close": "Kattintson az összecsukáshoz.<br>Kattintson a jobb gombbal a munkamenet teljes elrejtéséhez.",
-    "IGUI_ChuckAlertTooltip_Open": "Kattintson a megnyitáshoz.<br>Jobb gombbal kattintson a munkamenet teljes elrejtéséhez.",
+    "IGUI_ChuckAlertTooltip_Close": "Kattintson az összeomláshoz.",
+    "IGUI_ChuckAlertTooltip_Open": "Kattintson a megnyitáshoz. <BR> Kattintson a jobb gombbal, hogy teljesen elrejtse ezt a munkamenetet.",
     "IGUI_ChuckAlertCollapse": "Összeomlás",
-    "IGUI_ChuckAlertSeeAlerts": "Lásd: %1 Figyelmeztetés%2",
-    "IGUI_ChuckAlertHeaderMsg": "Üzenet Chuckleberry Finntől",
-    "IGUI_ChuckAlertDonationMsg": "Bár nagyon élvezem a modolást, jelentős időt és energiát igényel, és egyensúlyba kell hoznom más – különösen pénzügyi – felelősségekkel. Az egyértelműség kedvéért továbbra is karbantartom, támogatom, hibajavítom és frissítem a modjaim, mint mindig. Azonban ezeknek az egyéb prioritásoknak kell az első helyen szerepelniük.<br><br>Ugyanez a helyzet szinte minden modderre érvényes, és itt minden egyes modhoz találhat támogatási gombokat. Ezek a gombok testreszabhatók, és a mod-szerzők állítják be. Ha élvezte a modszerző kemény munkáját és elhivatottságát, és szeretné támogatni azt, fontolja meg ennek megtételét.<br><br>Személy szerint az adományok lehetővé teszik számomra, hogy időt és energiát áldozzak a projektjeimre. Ez azt jelenti, hogy egyáltalán nincs nyomás; csak akkor adakozzon, ha jól érzi magát és tud. Számomra már az is óriási jutalom, hogy élvezi a modjaim.<br><br>Köszönjük támogatását és megértését!"
+    "IGUI_ChuckAlertSeeAlerts": "Lásd: %1 riasztás %2",
+    "IGUI_ChuckAlertHeaderMsg": "Üzenet a Chuckleberry Finn -től",
+    "IGUI_ChuckAlertDonationMsg": "Miközben mélyen élvezem a módosítást, jelentős időt és energiát igényel, és egyensúlyba kell hoznom azt más felelősségekkel, különösen a pénzügyi felelősségekkel. Annak világossá tétele érdekében, hogy továbbra is karbantartom, támogatom, hibaelhárítom és frissítem a modjaimat, mint mindig. Ezeknek a többi prioritásnak azonban az elsőnek kell lennie. <Br> <BR> Ugyanez a helyzet szinte minden modidra vonatkozhat, és megtalálhatja a támogatási gombokat az összes itt felsorolt ​​MOD -hoz. Ezek a gombok testreszabhatók és a mod-írók állítják be. Ha élvezte bármilyen mod-szerelő kemény munkáját és odaadását, és szeretné támogatni, fontolja meg ezt. Erőfeszítés a projektjeimhez. Ennek ellenére egyáltalán nincs nyomás; Kérjük, csak akkor adományozzon, ha kényelmes és képes. Számomra a modjaim élvezete már óriási jutalom."
 }

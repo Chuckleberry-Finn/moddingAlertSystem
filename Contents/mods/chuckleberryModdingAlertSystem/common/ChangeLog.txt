@@ -100,3 +100,7 @@ Fixes: Anchored UI to handle screen size changes.
 [ 12/19/25 ]
 - Tested on B42.13 with no apparent issues.
 [ ------ ]
+
+[ 3/25/26 ]
+B42.15 Json Translations
+[ ------ ]

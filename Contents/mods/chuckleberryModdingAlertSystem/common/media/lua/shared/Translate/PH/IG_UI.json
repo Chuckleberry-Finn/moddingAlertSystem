@@ -1,8 +1,8 @@
 {
-    "IGUI_ChuckAlertTooltip_Close": "I-click upang I-collapse.<br>I-right-click upang ganap na Itago para sa session na ito.",
-    "IGUI_ChuckAlertTooltip_Open": "I-click upang Buksan.<br>I-right-click upang ganap na Itago para sa session na ito.",
-    "IGUI_ChuckAlertCollapse": "I-collapse",
-    "IGUI_ChuckAlertSeeAlerts": "Tingnan ang %1 Alerto%2",
-    "IGUI_ChuckAlertHeaderMsg": "Isang mensahe mula kay Chuckleberry Finn",
-    "IGUI_ChuckAlertDonationMsg": "Bagama't labis kong nasisiyahan sa modding, nangangailangan ito ng malaking oras at lakas, at kailangan kong balansehin ito sa iba pang mga responsibilidad, lalo na sa pananalapi. Upang gawing malinaw, patuloy kong papanatilihin, susuportahan, i-troubleshoot, at i-update ang aking mga mods gaya ng lagi kong ginagawa. Gayunpaman, dapat mauna ang ibang mga priyoridad na ito.<br><br>Maaaring malapat ang parehong sitwasyon sa halos lahat ng mga modder, at maaari kang makakita ng mga button ng suporta para sa bawat kaukulang mod na nakalista dito. Ang mga button na ito ay nako-customize at itinakda ng mga mod-authors. Kung nasiyahan ka sa pagsisikap at dedikasyon ng sinumang mod-author at gusto mong suportahan ito, pag-isipang gawin ito.<br><br>Sa personal, ginagawang mas posible ng mga donasyon para sa akin na maglaan ng oras at pagsisikap sa aking mga proyekto. Sabi nga, wala talagang pressure; mangyaring mag-donate lamang kung komportable at kaya mo. Para sa akin, ang iyong kasiyahan sa aking mga mod ay isa nang napakalaking reward.<br><br>Salamat sa iyong suporta at pag-unawa!"
+    "IGUI_ChuckAlertTooltip_Close": "Mag-click sa pagbagsak.",
+    "IGUI_ChuckAlertTooltip_Open": "Mag-click upang buksan.",
+    "IGUI_ChuckAlertCollapse": "Pagbagsak",
+    "IGUI_ChuckAlertSeeAlerts": "Tingnan ang %1 alerto %2",
+    "IGUI_ChuckAlertHeaderMsg": "Isang mensahe mula sa Chuckleberry Finn",
+    "IGUI_ChuckAlertDonationMsg": "Habang nasisiyahan ako sa modding, nangangailangan ito ng makabuluhang oras at enerhiya, at kailangan kong balansehin ito sa iba pang mga responsibilidad, lalo na ang mga pinansiyal. Upang malinaw ito, magpapatuloy akong mapanatili, suportahan, mag -troubleshoot, at i -update ang aking mga mod tulad ng lagi kong mayroon. Gayunpaman, ang iba pang mga priyoridad ay dapat na mauna. Ang mga pindutan na ito ay napapasadya at itinakda ng mga mod-authors. Kung nasiyahan ka sa anumang masipag at dedikasyon ng mod-author at nais mong suportahan ito, isaalang-alang ang paggawa nito. pagsisikap sa aking mga proyekto. Iyon ay sinabi, walang ganap na presyon; Mangyaring mag -donate lamang kung komportable ka at makakaya. Para sa akin, ang iyong kasiyahan sa aking mga mod ay isang napakalaking gantimpala. <Br> <br> Salamat sa iyong suporta at pag -unawa!"
 }
