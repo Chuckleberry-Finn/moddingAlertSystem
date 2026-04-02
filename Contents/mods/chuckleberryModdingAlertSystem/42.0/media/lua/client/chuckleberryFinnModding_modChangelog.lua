@@ -90,6 +90,7 @@ function changelog_handler.fetchAllModsLatest()
         local latestTitleStored = changelog_handler.scannedMods and changelog_handler.scannedMods[modID]
         local alerts = changelog_handler.fetchMod(modID, latestTitleStored)
         if alerts then
+
             local latestCurrent = alerts[#alerts]
             local lCTitle = latestCurrent and latestCurrent.title
 
@@ -110,13 +111,76 @@ function changelog_handler.fetchAllModsLatest()
 end
 
 
+function changelog_handler.parseBBCode(text)
+
+    -- [quote] blocks: wrap with a top/bottom border and indent contents
+    text = text:gsub("%[quote%]%s*\n?(.-)\n?%[/quote%]", function(inner)
+        local indented = inner:gsub("([^\n]+)", "  %1")
+        return "  \n" .. indented .. "\n"
+    end)
+
+    -- Headings: preserve the text but pad with newlines so they stand out
+    text = text:gsub("%[h%d%]%s*(.-)%s*%[/h%d%]", function(inner)
+        return "\n" .. inner:upper() .. "\n"
+    end)
+
+    -- [list] blocks: just ensure spacing around the whole block
+    text = text:gsub("%[list%]%s*\n?", "\n")
+    text = text:gsub("\n?%[/list%]", "\n")
+
+    -- [*] list items: convert to bullet character
+    text = text:gsub("%[%*%]%s*", "• ")
+
+    -- [url=...] with label: keep label and append URL in parens
+    text = text:gsub("%[url=([^%]]+)%](.-)%[/url%]", function(url, label)
+        label = label:match("^%s*(.-)%s*$")
+        if label ~= "" and label ~= url then
+            return label .. " (" .. url .. ")"
+        else
+            return url
+        end
+    end)
+
+    -- [url] without attribute: just keep the inner text
+    text = text:gsub("%[url%](.-)%[/url%]", "%1")
+
+    -- Inline formatting tags: strip, keep inner text
+    local inline_tags = { "b", "i", "u", "s", "color", "size", "center", "right", "left", "img" }
+    for _, tag in ipairs(inline_tags) do
+        -- with attribute e.g. [color=red]
+        text = text:gsub("%[" .. tag .. "=[^%]]*%](.-)%[/" .. tag .. "%]", "%1")
+        -- without attribute e.g. [b]
+        text = text:gsub("%[" .. tag .. "%](.-)%[/" .. tag .. "%]", "%1")
+        -- self-closing or orphaned open/close tags
+        text = text:gsub("%[/?" .. tag .. "[^%]]*%]", "")
+    end
+
+    -- Strip any remaining unknown [tag] or [/tag] or [tag=...] that weren't caught
+    text = text:gsub("%[/?[%a_][%w_]*[^%]]*%]", "")
+
+    -- Collapse 3+ consecutive newlines into two (one blank line max)
+    text = text:gsub("\n\n\n+", "\n\n")
+
+    -- Trim leading/trailing whitespace
+    text = text:match("^%s*(.-)%s*$")
+
+    return text
+end
+
+
 function changelog_handler.fetchMod(modID, latest)
 
     local reader = getModFileReader(modID, "ChangeLog.txt", false)
-    local md = false
+    local md, bbcode = false, false
+
     if not reader then
         md = true
         reader = getModFileReader(modID, "ChangeLog.md", false)
+    end
+
+    if not reader then
+        md, bbcode = false, true
+        reader = getModFileReader(modID, "ChangeLog.bbcode", false)
     end
 
     if not reader then return end
@@ -130,21 +194,43 @@ function changelog_handler.fetchMod(modID, latest)
     reader:close()
 
     local completeText = table.concat(lines, "\n")
-
     local alerts = {}
-    local pattern = md and "###%s*(.-)%s*###%s*(.-)%s*#" or "%[ ([^%]]+)% ](.-)%[ ------ %]"
 
-    local config = md and completeText:match("<!%-%- ALERT_CONFIG\n(.-)\n%-%->")
-    if config then
-        changelog_handler.parseModAlertConfig(modID, config)
-    end
+    if bbcode then
 
-    for title, contents in string.gmatch(completeText, pattern) do
-        local cleaned_contents = contents:gsub("^%s*\n", "")
-        if title == "ALERT_CONFIG" then
-            changelog_handler.parseModAlertConfig(modID, cleaned_contents)
-        else
-            table.insert(alerts, {title = title, contents = cleaned_contents})
+        local config = completeText:match("%[alert_config%]\n?(.-)\n?%[/alert_config%]")
+        if config then
+            changelog_handler.parseModAlertConfig(modID, config)
+            completeText = completeText:gsub("%[alert_config%].-\n?%[/alert_config%]\n?", "")
+        end
+
+        local title = completeText:match("%[quote%]%s*\n?([^\n]+)")
+                or completeText:match("^%s*([^\n]+)")
+                or ""
+
+        if title ~= "" then
+            local escaped = title:gsub("([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
+            completeText = completeText:gsub(escaped .. "\n?", "", 1)
+        end
+
+        local contents = completeText:match("^%s*(.-)%s*$")
+        table.insert(alerts, { title = title, contents = changelog_handler.parseBBCode(contents) })
+
+    else
+        local pattern = md and "###%s*(.-)%s*###%s*(.-)%s*#" or "%[ ([^%]]+)% ](.-)%[ ------ %]"
+
+        local config = md and completeText:match("<!%-%- ALERT_CONFIG\n(.-)\n%-%->")
+        if config then
+            changelog_handler.parseModAlertConfig(modID, config)
+        end
+
+        for title, contents in string.gmatch(completeText, pattern) do
+            local cleaned_contents = contents:gsub("^%s*\n", "")
+            if title == "ALERT_CONFIG" then
+                changelog_handler.parseModAlertConfig(modID, cleaned_contents)
+            else
+                table.insert(alerts, { title = title, contents = cleaned_contents })
+            end
         end
     end
 

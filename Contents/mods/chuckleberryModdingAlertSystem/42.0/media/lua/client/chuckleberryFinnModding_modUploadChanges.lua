@@ -15,7 +15,7 @@ local function WorkshopSubmitScreen_generateChangelog(workshopItem)
 
     if not mod_id then return end
 
-    local alerts = changelog_handler.fetchMod("\\"..mod_id)
+    local alerts = changelog_handler.fetchMod(mod_id)
     local latest = alerts and alerts[#alerts]
 
     local latestTitle = latest and latest.title or ""

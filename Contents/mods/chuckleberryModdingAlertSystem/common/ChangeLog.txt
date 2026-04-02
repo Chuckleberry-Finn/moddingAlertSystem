@@ -104,3 +104,9 @@ Fixes: Anchored UI to handle screen size changes.
 [ 3/25/26 ]
 B42.15 Json Translations
 [ ------ ]
+
+[ 4/2/26 ]
+Fix duplicate changelogs being displayed.
+Fix uploader changelog function.
+Supports BBCode Changelog format.
+[ ------ ]

@@ -201,7 +201,9 @@ function alertSystem:updateButtons()
                 button.backgroundColor = {r=buttonData.color.r, g=buttonData.color.g, b=buttonData.color.b, a=0.06}
                 button:setImage(buttonData.icon)
                 button.textColor = buttonData.color
-                button:setTitle(buttonData.icon and "" or buttonData.title)
+
+                local titleText = buttonData.icon and "" or alertSystem:truncateToFit(buttonData.title, UIFont.Small, button.width - (alertSystem.padding * 0.5))
+                button:setTitle(titleText)
             end
         end
         button:setVisible((visible) and (not self.collapsed))
@@ -297,6 +299,9 @@ end
 
 function alertSystem:initialise()
     ISPanelJoypad.initialise(self)
+
+    alertSystem.alertsLoaded = {}
+    alertSystem.alertsOld = 0
 
     self.latestAlerts = changelog_handler.fetchAllModsLatest()
 
@@ -401,6 +406,29 @@ function alertSystem:initialise()
     self.alertBarSpan = self.width*0.65
     self.alertLeftX = (self.width/2)-(self.alertBarSpan/2)
     self.alertRightX = (self.width/2)+(self.alertBarSpan/2)
+end
+
+
+function alertSystem:truncateToFit(text, font, maxWidth)
+    local ellipsis = "..."
+    local ellipsisW = getTextManager():MeasureStringX(font, ellipsis)
+    if getTextManager():MeasureStringX(font, text) <= maxWidth then
+        return text
+    end
+    -- Binary-search for the longest prefix that fits with "..."
+    local lo, hi = 1, #text
+    local result = ""
+    while lo <= hi do
+        local mid = math.floor((lo + hi) / 2)
+        local candidate = text:sub(1, mid)
+        if getTextManager():MeasureStringX(font, candidate) + ellipsisW <= maxWidth then
+            result = candidate
+            lo = mid + 1
+        else
+            hi = mid - 1
+        end
+    end
+    return result .. ellipsis
 end
 
 
