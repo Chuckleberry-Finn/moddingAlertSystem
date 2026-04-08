@@ -110,3 +110,7 @@ Fix duplicate changelogs being displayed.
 Fix uploader changelog function.
 Supports BBCode Changelog format.
 [ ------ ]
+
+[ 4/8/26 ]
+Improved changelog lookup process.
+[ ------ ]

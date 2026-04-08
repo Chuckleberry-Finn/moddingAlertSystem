@@ -168,19 +168,23 @@ function changelog_handler.parseBBCode(text)
 end
 
 
+function changelog_handler.resolveFile(modID, filename)
+    return getModFileReader(modID, "media"..getFileSeparator()..filename, false) or getModFileReader(modID, filename, false)
+end
+
 function changelog_handler.fetchMod(modID, latest)
 
-    local reader = getModFileReader(modID, "ChangeLog.txt", false)
+    local reader = changelog_handler.resolveFile(modID, "ChangeLog.txt")
     local md, bbcode = false, false
 
     if not reader then
         md = true
-        reader = getModFileReader(modID, "ChangeLog.md", false)
+        reader = changelog_handler.resolveFile(modID, "ChangeLog.md")
     end
 
     if not reader then
         md, bbcode = false, true
-        reader = getModFileReader(modID, "ChangeLog.bbcode", false)
+        reader = changelog_handler.resolveFile(modID, "ChangeLog.bbcode")
     end
 
     if not reader then return end
